@@ -5,3 +5,7 @@ allowBuilds:
   lightningcss: true
   unrs-resolver: true
   msw: false
+  core-js: true
+
+minimumReleaseAgeExclude:
+  - shadcn@4.14.0
