@@ -7,6 +7,7 @@
 | Server state | TanStack Query |
 | Data platform | Supabase (JS client) |
 | Validation | Zod |
+| Language | TypeScript 7 (native `tsc`) |
 | UI | React 19, shadcn/ui, Base UI |
 | Styling | Tailwind CSS v4 |
 | Icons | @tabler/icons-react |
@@ -24,6 +25,29 @@ VITE_SUPABASE_KEY=sb_publishable_...
 ```
 
 The Supabase client is created once in `src/utils/supabase.ts`.
+
+## TypeScript 7 (Native) Setup
+
+TypeScript 7's native Go compiler is used for `tsc --noEmit` (typecheck). TypeScript 7.0 does not ship a programmatic API yet, which `typescript-eslint` (via `@tanstack/eslint-config`) still needs. Until that API lands, the two compilers run side by side via npm aliases:
+
+```jsonc
+"devDependencies": {
+  "typescript": "npm:@typescript/typescript6@^6.0.2", // API for typescript-eslint
+  "@typescript/native": "npm:typescript@^7.0.2"          // `tsc` binary (native)
+}
+```
+
+- `tsc` -> native TypeScript 7 (fast typecheck).
+- `tsc6` -> TypeScript 6 compatibility compiler (for comparison).
+- `import "typescript"` -> resolves to the TS 6 API, keeping `eslint`/`typescript-eslint` working.
+
+### Migration to a single TypeScript 7 (when 7.1 ships)
+
+When TypeScript 7.1 ships its stable programmatic API and `typescript-eslint` declares support (tracked in https://github.com/typescript-eslint/typescript-eslint/issues/10940):
+
+1. Set `"typescript"` back to `"^7.x"`.
+2. Remove the `@typescript/native` and `@typescript/typescript6` aliases.
+3. Run `pnpm install`, then verify `pnpm typecheck`, `pnpm lint`, and `pnpm build` all pass from a clean install.
 
 ## External References
 
