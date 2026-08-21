@@ -13,6 +13,7 @@ This file is the fast entry point for agents. The detailed source of truth lives
    - `docs/handbook/05_ui_state_patterns.md`
    - `docs/handbook/06_quality_rules.md`
    - `docs/handbook/07_development_checklist.md`
+   - `docs/handbook/08_zustand_best_practices.md`
 
 ## Core Architecture Rules
 
@@ -35,6 +36,14 @@ src/features/[feature]/
 |-- schemas.ts      # Zod schemas and exported types
 `-- index.ts        # client-safe public API
 ```
+
+## State Management Rules (TanStack Query vs Zustand)
+
+- **TanStack Query**: Owns all server-state caching, loading/error states, and optimistic mutations. Do not duplicate or mirror server data in Zustand.
+- **Zustand**: Owns synchronous client UI state (sidebars, modals, multi-step draft wizards, interactive tool state).
+- Always use granular atomic selectors (`useStore(s => s.item)`) or `useShallow` from `zustand/react/shallow` to prevent unnecessary re-renders.
+- Guard persisted store state (`persist` middleware) with a hydration check to prevent SSR hydration mismatches in TanStack Start.
+- Feature-scoped client stores live in `src/features/[feature]/store.ts` and re-export client-safe hooks via `index.ts`. Global UI stores live in `src/stores/`.
 
 ## TanStack Rules
 

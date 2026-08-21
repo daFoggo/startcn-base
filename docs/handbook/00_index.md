@@ -13,6 +13,7 @@ This folder is the canonical documentation set for the current frontend architec
 | 5 | `05_ui_state_patterns.md` | Loading, error, empty, compact UI, and form action states |
 | 6 | `06_quality_rules.md` | Consistency rules, checks, and review expectations |
 | 7 | `07_development_checklist.md` | Practical development and review checklist |
+| 8 | `08_zustand_best_practices.md` | Zustand client state management best practices & SSR rules |
 
 ## Mandatory Agent Rule Files
 
@@ -29,6 +30,8 @@ Automation agents and coding assistants should read `AGENTS.md` at the project r
 - Optional widgets use local `useQuery` states.
 - Supabase client access is centralized in `src/utils/supabase.ts`.
 - Auth and data mutations use the Supabase JS client, not a hand-rolled HTTP client.
+- Zustand is for synchronous client/transient UI state only; do not mirror server state in Zustand.
+- Always use atomic selectors or `useShallow` with Zustand stores to prevent unnecessary re-renders.
 - UI state handling is mandatory for every async UI surface.
 - Compact UI is allowed only when full `Alert` or empty state would break layout flow.
 - Submit-critical dependency queries must block actions while loading or errored.
