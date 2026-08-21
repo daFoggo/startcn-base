@@ -11,6 +11,7 @@ import { ErrorFallback, NotFound } from "@/components/common/error-pages";
 import { QueryProvider } from "@/components/common/query-provider";
 import { ThemeProvider } from "@/components/common/theme-provider";
 import { ToasterProvider } from "@/components/common/toaster-provider";
+import { SITE_CONFIG } from "@/configs/site";
 import { getThemeServerFn, storageKey } from "@/lib/theme";
 import type { IRouterContext } from "@/router";
 import appCss from "../styles.css?url";
@@ -26,7 +27,7 @@ export const Route = createRootRouteWithContext<IRouterContext>()({
 				content: "width=device-width, initial-scale=1",
 			},
 			{
-				title: "Khanh Linh Furniture",
+				title: SITE_CONFIG.metadata.title,
 			},
 		],
 		links: [

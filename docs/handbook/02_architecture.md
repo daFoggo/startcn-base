@@ -1,6 +1,6 @@
 # Architecture
 
-Khanh Linh Furniture uses feature-based frontend architecture with route-level orchestration.
+startcn-base uses feature-based frontend architecture with route-level orchestration.
 
 ## Directory Map
 

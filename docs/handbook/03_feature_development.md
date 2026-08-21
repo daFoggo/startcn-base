@@ -1,6 +1,6 @@
 # Feature Development
 
-This document describes how to add or refactor a feature module in Khanh Linh Furniture.
+This document describes how to add or refactor a feature module in startcn-base.
 
 ## Feature Checklist
 

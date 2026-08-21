@@ -1,4 +1,4 @@
-# Khanh Linh Furniture Agent Instructions
+# Agent Instructions
 
 This file is the fast entry point for agents. The detailed source of truth lives in `docs/handbook/`.
 

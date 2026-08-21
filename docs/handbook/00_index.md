@@ -1,4 +1,4 @@
-# Khanh Linh Furniture Handbook
+# startcn-base Handbook
 
 This folder is the canonical documentation set for the current frontend architecture and development rules.
 

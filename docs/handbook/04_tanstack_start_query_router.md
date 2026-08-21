@@ -1,6 +1,6 @@
 # TanStack Start, Router, Query, and Supabase Patterns
 
-This is the canonical data-fetching pattern for Khanh Linh Furniture.
+This is the canonical data-fetching pattern for startcn-base.
 
 ## Approved Stack
 

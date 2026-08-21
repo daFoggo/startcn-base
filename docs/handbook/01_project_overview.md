@@ -19,7 +19,7 @@
 Client environment variables are validated in `src/configs/env.ts`.
 
 ```env
-VITE_SUPABASE_URL=https://gbiwnwzquzhkvkvzcfgy.supabase.co
+VITE_SUPABASE_URL=https://<your-project>.supabase.co
 VITE_SUPABASE_KEY=sb_publishable_...
 ```
 

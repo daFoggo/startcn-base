@@ -1,6 +1,5 @@
-# Khanh Linh Furniture
-
-Frontend web application for Khanh Linh Furniture, built with **TanStack Start + React 19 + shadcn/ui + Tailwind CSS v4 + Supabase**.
+# Tanstack Start base
+Frontend web application base, built with **TanStack Start + React 19 + shadcn/ui + Tailwind CSS v4 + Supabase**.
 
 ## Prerequisites
 
@@ -57,11 +56,7 @@ pnpm --version
 
 ### 3. Clone & Install Dependencies
 
-```bash
-git clone <repo-url> khanhlinh-funiture
-cd khanhlinh-funiture
-pnpm install
-```
+
 
 ### 4. Configure Environment Variables
 
@@ -72,7 +67,7 @@ cp .env.example .env
 Fill in the values in `.env`:
 
 ```env
-VITE_SUPABASE_URL=https://gbiwnwzquzhkvkvzcfgy.supabase.co
+VITE_SUPABASE_URL=https://<your-project>.supabase.co
 VITE_SUPABASE_KEY=sb_publishable_...
 ```
 

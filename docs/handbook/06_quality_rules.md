@@ -1,6 +1,6 @@
 # Quality Rules
 
-This document collects consistency and safety rules for Khanh Linh Furniture.
+This document collects consistency and safety rules for startcn-base.
 
 ## Checks
 
@@ -31,7 +31,6 @@ Do not run expensive checks repeatedly for every tiny edit unless requested.
 - Do not hardcode custom z-index values such as `z-[999]`.
 - Use Tailwind design tokens and project CSS variables.
 - Use @tabler/icons-react only for icons.
-- Do not mix English and Vietnamese in the same UI surface except proper nouns and technical terms.
 - Do not use `<Badge>` for filters because badges do not provide interactive state.
 
 ## Component Rules

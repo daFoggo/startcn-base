@@ -1,6 +1,6 @@
 # Typography & Spacing Standards
 
-> Bộ quy chuẩn typography và spacing cho Khanh Linh Furniture Dashboard, tham khảo shadcn/ui base typography và phân tích từ layout Supabase.
+> Bộ quy chuẩn typography và spacing cho startcn-base Dashboard, tham khảo shadcn/ui base typography và phân tích từ layout Supabase.
 > Chỉ tập trung 2 phần: **Typography** và **Spacing**. Các phần khác (color, shadow, motion) sẽ bổ sung sau.
 
 ---

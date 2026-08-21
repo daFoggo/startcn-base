@@ -4,21 +4,14 @@
  */
 export const SITE_CONFIG = {
 	metadata: {
-		title: "Khanh Linh Furniture",
+		title: "startcn-base",
 		description:
-			"High-quality furniture store for your home. Tables, chairs, wardrobes and more.",
-		keywords: [
-			"Khanh Linh",
-			"furniture",
-			"interior",
-			"nội thất",
-			"bàn ghế",
-			"tủ quần áo",
-		],
+			"Production-ready web application starter built with TanStack Start, React 19, shadcn/ui, Tailwind CSS v4, and Supabase.",
+		keywords: ["startcn-base", "tanstack start", "react", "shadcn", "supabase"],
 	},
 	app: {
-		title: "Khanh Linh Furniture",
-		slogan: "Beautiful furniture for every home.",
+		title: "startcn-base",
+		slogan: "A production-ready TanStack Start starter.",
 	},
 } as const;
 
