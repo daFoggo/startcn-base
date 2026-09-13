@@ -1,7 +1,7 @@
 # Typography & Spacing Standards
 
-> Bộ quy chuẩn typography và spacing cho startcn-base Dashboard, tham khảo shadcn/ui base typography và phân tích từ layout Supabase.
-> Chỉ tập trung 2 phần: **Typography** và **Spacing**. Các phần khác (color, shadow, motion) sẽ bổ sung sau.
+> Standard typography and spacing guidelines for startcn-base, referenced from shadcn/ui base typography and Supabase layout analysis.
+> Focused exclusively on two areas: **Typography** and **Spacing**. Other aspects (color, shadow, motion) are documented separately.
 
 ---
 
@@ -9,58 +9,58 @@
 
 ### Font Stack
 
-Dự án đã có sẵn 3 font variable:
+The project comes preconfigured with 3 font variables:
 
-| Token | Font | Dùng cho |
+| Token | Font | Used for |
 |-------|------|----------|
 | `--font-sans` | Geist Variable | Body, heading, UI text |
 | `--font-mono` | Geist Mono Variable | Code, data values, IDs, timestamps |
-| `--font-title` | Funnel Display Variable | Brand logo, marketing headline (ít dùng trong dashboard) |
+| `--font-title` | Funnel Display Variable | Brand logo, marketing headline (rarely used in dashboard) |
 
-**Quy tắc:**
+**Rules:**
 
-- Dashboard chủ yếu dùng `font-sans`.
-- Chỉ dùng `font-mono` cho: ID, connection string, database column type, log timestamp, metric value.
-- Không dùng `font-title` cho UI text thông thường.
+- Dashboards predominantly use `font-sans`.
+- Only use `font-mono` for: IDs, connection strings, database column types, log timestamps, and metric values.
+- Do not use `font-title` for standard UI text.
 
 ### Type Scale
 
-Chỉ dùng **Tailwind default font sizes**, không dùng arbitrary values.
+Use **Tailwind default font sizes** only; do not use arbitrary values.
 
-| Token | Tailwind class | Size | Line Height | Weight | Tracking | Dùng cho |
+| Token | Tailwind class | Size | Line Height | Weight | Tracking | Used for |
 |-------|---------------|------|-------------|--------|----------|----------|
 | `display` | `text-4xl` | 36px | 1.1 | 700 (bold) | `tracking-tighter` | Empty state hero |
-| `page-title` | `text-3xl` | 30px | 1.2 | 600 (semibold) | `tracking-tight` | Tiêu đề page |
-| `section-title` | `text-xl` | 20px | 1.3 | 600 (semibold) | `tracking-tight` | Tiêu đề section |
-| `card-title` | `text-base` | 16px | 1.4 | 600 (semibold) | — | Tên organization, project, table |
+| `page-title` | `text-3xl` | 30px | 1.2 | 600 (semibold) | `tracking-tight` | Page title |
+| `section-title` | `text-xl` | 20px | 1.3 | 600 (semibold) | `tracking-tight` | Section title |
+| `card-title` | `text-base` | 16px | 1.4 | 600 (semibold) | — | Organization, project, or table name |
 | `body` | `text-sm` | 14px | 1.5 | 400 (normal) | — | Description, metadata |
 | `body-sm` | `text-sm` | 14px | 1.5 | 400 (normal) | — | Secondary text, hint |
 | `label` | `text-xs` | 12px | 1.4 | 500 (medium) | — | Form label, sidebar group label |
 | `caption` | `text-xs` | 12px | 1.3 | 500 (medium) | `uppercase tracking-wider` | Badge, tag |
-| `data` | `text-xs` | 12px | 1.4 | 400 (normal) | — | Code/data với `font-mono` |
+| `data` | `text-xs` | 12px | 1.4 | 400 (normal) | — | Code/data with `font-mono` |
 
-### Quy tắc sử dụng cụ thể
+### Specific Usage Rules
 
 #### Headings
 
 ```tsx
-// Page title — đỉnh trang, chỉ 1 trên mỗi page
+// Page title — top of page, only one per page
 <h1 className="text-3xl font-semibold tracking-tight">
 
-// Section title — chia vùng nội dung lớn
+// Section title — major content grouping
 <h2 className="text-xl font-semibold tracking-tight">
 
-// Card title — tên item trong list/grid
+// Card title — item name in list/grid
 <h3 className="text-base font-semibold">
 ```
 
 #### Body & Meta
 
 ```tsx
-// Mô tả/metas chính
+// Primary description/meta
 <p className="text-sm text-muted-foreground">
 
-// Mô tả phụ, hint (cùng size nhưng muted)
+// Secondary description, hint (same size but muted)
 <p className="text-sm text-muted-foreground/70">
 
 // Data values
@@ -79,20 +79,20 @@ Chỉ dùng **Tailwind default font sizes**, không dùng arbitrary values.
 
 ### Color & Contrast
 
-| Vai trò | Light mode | Dark mode |
-|---------|------------|-----------|
+| Role | Light mode | Dark mode |
+|------|------------|-----------|
 | Primary text | `foreground` | `foreground` |
 | Secondary text | `muted-foreground` | `muted-foreground` |
 | Active/selected | `foreground` | `foreground` |
-| Disabled | `muted-foreground` với `opacity-50` | `muted-foreground` với `opacity-50` |
+| Disabled | `muted-foreground` with `opacity-50` | `muted-foreground` with `opacity-50` |
 
-### Không làm
+### Prohibited Patterns
 
-- Không dùng `font-thin` (100) cho UI text.
-- Không dùng `font-black` (900) trong dashboard.
-- Không dùng quá 2 font trong cùng một màn hình dashboard.
-- Không dùng `italic` cho UI text.
-- **Nghiêm cấm font size nhỏ hơn `text-xs` (12px).** `text-xs` là giới hạn dưới, không dùng arbitrary values như `text-[11px]`, `text-[10px]`, `text-[0.625rem]`.
+- Do not use `font-thin` (100) for UI text.
+- Do not use `font-black` (900) in dashboards.
+- Do not use more than 2 fonts within the same dashboard screen.
+- Do not use `italic` for UI text.
+- **Strictly prohibited: font sizes smaller than `text-xs` (12px).** `text-xs` is the lower boundary; never use arbitrary values like `text-[11px]`, `text-[10px]`, `text-[0.625rem]`.
 
 ---
 
@@ -100,39 +100,39 @@ Chỉ dùng **Tailwind default font sizes**, không dùng arbitrary values.
 
 ### Base Spacing Scale
 
-| Token | Value | Dùng cho |
+| Token | Value | Used for |
 |-------|-------|----------|
 | `space-1` | 4px | Icon gap, badge padding |
-| `space-2` | 8px | Tight gap trong component |
-| `space-3` | 12px | Gap giữa các phần tử trong card |
-| `space-4` | 16px | Card padding, section gap tiêu chuẩn |
-| `space-5` | 20px | Card padding lớn hơn một chút |
-| `space-6` | 24px | Gap giữa page title và content |
+| `space-2` | 8px | Tight gap inside components |
+| `space-3` | 12px | Gap between elements inside cards |
+| `space-4` | 16px | Card padding, standard section gap |
+| `space-5` | 20px | Slightly larger card padding |
+| `space-6` | 24px | Gap between page title and content |
 | `space-8` | 32px | Page padding |
-| `space-10` | 40px | Page padding lớn trên màn hình rộng |
-| `space-12` | 48px | Section spacing lớn |
+| `space-10` | 40px | Wide screen page padding |
+| `space-12` | 48px | Large section spacing |
 | `space-16` | 64px | Marketing/empty state spacing |
 
 ### Dashboard Layout Spacing
 
-Dựa trên phân tích từ ảnh Supabase, dùng **Tailwind spacing classes** thuần.
+Based on analysis of Supabase design patterns, strictly using pure **Tailwind spacing classes**.
 
-| Vị trí | Tailwind class | Giá trị | Ghi chú |
-|--------|---------------|---------|---------|
+| Location | Tailwind class | Value | Notes |
+|----------|---------------|-------|-------|
 | Topbar height | `h-14` | 56px | Fixed height |
-| Primary sidebar width | `w-64` | 256px | Mở rộng |
-| Primary sidebar width (collapsed) | `w-12` | 48px | Chỉ hiện icon |
+| Primary sidebar width | `w-64` | 256px | Expanded |
+| Primary sidebar width (collapsed) | `w-12` | 48px | Icon only |
 | Secondary sidebar width | `w-72` | 288px | Sub-navigation |
-| Page padding | `p-8` | 32px | Mặc định |
-| Page padding (wide ≥1440px) | `p-10` | 40px | Tăng nhẹ trên màn hình lớn |
+| Page padding | `p-8` | 32px | Default |
+| Page padding (wide ≥1440px) | `p-10` | 40px | Slightly increased on large screens |
 | Gap title → toolbar | `gap-6` | 24px | |
 | Gap toolbar → content | `gap-4` | 16px | |
-| Gap giữa cards | `gap-4` | 16px | Grid gap |
-| Card padding | `p-4` | 16px | Tiêu chuẩn |
-| Card padding (compact) | `p-3` | 12px | Khi nhiều thông tin |
+| Gap between cards | `gap-4` | 16px | Grid gap |
+| Card padding | `p-4` | 16px | Standard |
+| Card padding (compact) | `p-3` | 12px | High information density |
 | Sidebar item height | `h-9` | 36px | |
 | Sidebar item padding-x | `px-3` | 12px | |
-| Toolbar item gap | `gap-3` | 12px | Giữa search, filter, sort, action |
+| Toolbar item gap | `gap-3` | 12px | Between search, filter, sort, action |
 
 ### Spacing Patterns
 
@@ -183,11 +183,11 @@ Dựa trên phân tích từ ảnh Supabase, dùng **Tailwind spacing classes** 
 
 ### Z-Index Layers
 
-| Layer | z-index | Dùng cho |
+| Layer | z-index | Used for |
 |-------|---------|----------|
 | Background | 0 | Page background |
 | Content | 10 | Cards, tables |
-| Sticky | 20 | Sticky header trong table |
+| Sticky | 20 | Sticky table header |
 | Topbar | 30 | Fixed topbar |
 | Sidebar | 40 | Fixed sidebar |
 | Overlay | 50 | Sheet, modal, command palette |
@@ -195,9 +195,9 @@ Dựa trên phân tích từ ảnh Supabase, dùng **Tailwind spacing classes** 
 
 ---
 
-## 3. Áp dụng trong code
+## 3. Code Implementation
 
-### Tailwind Classes tham khảo
+### Reference Tailwind Classes
 
 ```tsx
 // Page title
@@ -222,7 +222,7 @@ Dựa trên phân tích từ ảnh Supabase, dùng **Tailwind spacing classes** 
 <kbd className="rounded border bg-muted px-1.5 py-0.5 text-xs font-medium">Ctrl K</kbd>
 ```
 
-### CSS Variables (nếu cần extend sau)
+### CSS Variables (if extension is needed later)
 
 ```css
 :root {
@@ -234,19 +234,20 @@ Dựa trên phân tích từ ảnh Supabase, dùng **Tailwind spacing classes** 
 }
 ```
 
-Ưu tiên dùng Tailwind classes trực tiếp. CSS variables chỉ dùng khi cần tính toán layout phức tạp hoặc share giữa nhiều component.
+Prioritize using Tailwind utility classes directly. CSS variables should only be used when complex layout calculations or cross-component sharing are necessary.
 
 ---
 
-## 4. Checklist khi viết UI
+## 4. UI Development Checklist
 
-- [ ] Page title chỉ dùng `text-3xl font-semibold tracking-tight`.
-- [ ] Body text mặc định là `text-sm`.
-- [ ] Secondary text luôn dùng `text-muted-foreground`.
-- [ ] Badge/tag dùng `text-xs font-medium uppercase tracking-wider`.
-- [ ] **Không font size nào nhỏ hơn `text-xs` (12px).** Tuyệt đối không dùng `text-[11px]`, `text-[10px]`, `text-[0.625rem]`.
-- [ ] Card padding mặc định `p-4`.
-- [ ] Gap giữa cards `gap-4`.
-- [ ] Page padding `p-8`.
-- [ ] Không dùng spacing tùy tiện ngoài scale đã định nghĩa.
-- [ ] Ưu tiên Tailwind classes có sẵn, tránh arbitrary values như `text-[...]`, `w-[...rem]`.
+- [ ] Page title strictly uses `text-3xl font-semibold tracking-tight`.
+- [ ] Body text defaults to `text-sm`.
+- [ ] Secondary text always uses `text-muted-foreground`.
+- [ ] Badge/tag uses `text-xs font-medium uppercase tracking-wider`.
+- [ ] **No font size smaller than `text-xs` (12px).** Never use `text-[11px]`, `text-[10px]`, `text-[0.625rem]`.
+- [ ] Card padding defaults to `p-4`.
+- [ ] Gap between cards defaults to `gap-4`.
+- [ ] Page padding defaults to `p-8`.
+- [ ] Do not use arbitrary spacing outside the defined scale.
+- [ ] Prioritize built-in Tailwind classes, avoiding arbitrary values like `text-[...]`, `w-[...rem]`.
+

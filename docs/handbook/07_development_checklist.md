@@ -1,6 +1,15 @@
+---
+name: development-checklist
+description: Review implementation against the project's architecture, data, and UI rules. Use before, during, and after coding a feature to verify feature boundaries, data fetching, UI states, mutations, and Supabase usage.
+---
+
 # Development Checklist
 
-This checklist is focused on implementation and review. It intentionally avoids product model documentation.
+## When to Use
+
+- Before starting a feature (boundaries, orchestration, existing components).
+- During implementation (data fetching, UI state, mutations).
+- Before merging (review checklist).
 
 ## Before Coding
 
@@ -28,8 +37,8 @@ This checklist is focused on implementation and review. It intentionally avoids 
 
 - Query functions return valid data or throw.
 - Do not use `catch -> return null`, `catch -> return []`, or `{ error }` payloads for API failures.
-- Critical route data uses `ensureQueryData` and Suspense.
-- Secondary widgets use `prefetchQuery` or local `useQuery`.
+- Critical route data uses `queryClient.query(...)` (awaited) and Suspense.
+- Secondary widgets use `queryClient.query(...)` fire-and-forget or local `useQuery`.
 - Optional/search/inline queries may use `enabled`.
 - Suspense query options should not use `enabled`.
 - 404 handling should be deliberate: known missing route resources can become `notFound()`, unknown errors rethrow.
@@ -38,7 +47,7 @@ This checklist is focused on implementation and review. It intentionally avoids 
 
 - Every local `useQuery` surface needs loading and error states.
 - Add empty state only for valid empty data.
-- Main content uses `Skeleton`, destructive `Alert`, and a full empty state composition.
+- Main content uses `Skeleton`, destructive `Alert`, and the `Empty` primitive (`@/components/ui/empty`) for valid empty data.
 - Compact spaces use inline `Skeleton`, tiny icon/error text, and compact helper empty text.
 - Do not hide failed queries by defaulting to `[]`, `null`, hidden UI, or fallback values.
 - If a query feeds submit-critical data, disable the action while loading or errored.
@@ -72,7 +81,7 @@ Submit-critical examples:
 - Are cross-feature workflows injected through props/callbacks instead of direct query/mutation imports?
 - Does server-state code throw on failure?
 - Are route loaders aligned with Suspense usage?
-- Is `useSuspenseQuery` backed by `ensureQueryData`?
+- Is `useSuspenseQuery` backed by an awaited `queryClient.query(...)` in the loader?
 - Is `enabled` used only for optional/search/inline queries?
 - Are all local query states represented?
 - Are failed queries prevented from becoming fake empty data?
@@ -81,5 +90,12 @@ Submit-critical examples:
 - Are mutation side effects split correctly between hooks and components?
 - Are invalidations using key factories?
 - Are UI components using existing primitives and composition rules?
+- Are primitives used without re-styling their built-in appearance (no `rounded-full`/`text-xs`/`px-4` overrides on default Buttons; `variant`/`size` props chosen instead)?
+- Is `className` on a primitive limited to layout or theme-necessitated overrides?
+- Are search / language / icon controls composed from primitives (`InputGroup`, `Button`, `DropdownMenuTrigger`) instead of hand-rolled `<button>` pills?
+- Are internal button-as-link usages using `Button render={<Link />}` instead of a raw `<a>`?
+- Is a compound component (`Object.assign`) present only where sub-parts are actually composed by callers?
+- Are single-use sections plain components with no dead `Root`/`Header`/`Card`/`Preset` exports or unused `className`/`...props` threading?
 - Are errors displayed through `getErrorMessage`?
+- Are source files free of mojibake (encoding corruption)? Scan for `â€¦`, `â€”`, `â€™`, `Ã©`, `Ã¨`, `báº±ng`, `tháº­t`, `Äá»“ng`… — corrupted UTF-8 produced by shell tools (e.g. `Set-Content` in PowerShell) decoding as Latin-1. Re-run the scan after any batch regex/shell edit; fix via the edit tool, not shell writes.
 - Did you run the appropriate checks for the size of the change?

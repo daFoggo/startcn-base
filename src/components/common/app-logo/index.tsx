@@ -1,4 +1,4 @@
-import { IconTransferIn } from "@tabler/icons-react";
+import { IconBrandReact } from "@tabler/icons-react";
 import { SITE_CONFIG } from "@/configs/site";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +25,7 @@ export const AppLogo = ({
 
 	return (
 		<div className={cn("flex items-center gap-2 font-title", className)}>
-			{!hideIcon && <IconTransferIn className={iconSize} />}
+			{!hideIcon && <IconBrandReact className={iconSize} />}
 			{!hideTitle && (
 				<span className={cn("font-semibold", titleSize)}>
 					{SITE_CONFIG.app.title}

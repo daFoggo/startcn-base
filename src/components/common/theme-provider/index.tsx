@@ -19,13 +19,20 @@ type TThemeContextVal = {
 	setTheme: (val: TTheme) => void;
 	isPending: boolean;
 };
-type TThemeProviderProps = PropsWithChildren<{ theme: TTheme }>;
+type TThemeProviderProps = PropsWithChildren<{ theme?: TTheme }>;
 
-const ThemeContext = createContext<TThemeContextVal | null>(null);
+const DEFAULT_THEME_CONTEXT: TThemeContextVal = {
+	theme: "system",
+	resolvedTheme: "light",
+	setTheme: () => {},
+	isPending: false,
+};
+
+const ThemeContext = createContext<TThemeContextVal>(DEFAULT_THEME_CONTEXT);
 
 export const ThemeProvider = ({
 	children,
-	theme: initialTheme,
+	theme: initialTheme = "system",
 }: TThemeProviderProps) => {
 	const router = useRouter();
 	const [theme, setThemeState] = useState<TTheme>(initialTheme);
@@ -105,8 +112,6 @@ export const ThemeProvider = ({
 	);
 };
 
-export const useTheme = () => {
-	const val = use(ThemeContext);
-	if (!val) throw new Error("useTheme called outside of ThemeProvider!");
-	return val;
-};
+export const useTheme = () => use(ThemeContext);
+
+export { ThemeToggle } from "./theme-toggle";

@@ -1,6 +1,15 @@
+---
+name: feature-development
+description: Build or refactor a feature module under src/features/. Use when adding a feature, wiring queries/mutations/functions/schemas, or composing cross-feature pages in routes. Covers the feature checklist, import rules, mutation side effects, and async UI requirements.
+---
+
 # Feature Development
 
-This document describes how to add or refactor a feature module in startcn-base.
+## When to Use
+
+- Creating or refactoring a `src/features/[feature]/` module.
+- Adding query options, mutations, server functions, or schemas.
+- Wiring cross-feature data into a route and deciding async UI states.
 
 ## Feature Checklist
 
@@ -9,7 +18,7 @@ This document describes how to add or refactor a feature module in startcn-base.
 3. Put server-only API logic in `server.ts`.
 4. Wrap server logic with `createServerFn` in `functions.ts`.
 5. Define query keys, query options, and mutations in `queries.ts`.
-6. Build feature-specific components in `components/`.
+6. Build cross-page / shared / cross-cutting feature components in `components/`; page-local views live in `routes/.../-components/` (see `02_architecture.md` → Component Placement Rule).
 7. Export only client-safe modules from `index.ts`.
 8. Compose the feature into pages from `src/routes/`.
 
@@ -22,6 +31,7 @@ This document describes how to add or refactor a feature module in startcn-base.
 - `components/` should not import from `server.ts`.
 - `components/` should not import another feature's query or mutation hook for page composition. Move cross-feature data/actions to a route or layout container and inject props/callbacks.
 - Feature internals should use relative imports for same-feature modules instead of importing their own public barrel.
+- `components/` holds only UI that crosses page boundaries or is shared within/around the feature. A view used by exactly one route is page-local and belongs in that route's `-components/` folder; promote it into the feature when a second consumer appears (`02_architecture.md` → Component Placement Rule).
 
 ## Mutation Side Effects
 
@@ -47,7 +57,7 @@ Use `mutateAsync` only when the component needs to compose follow-up side effect
 When a feature component needs another feature's data:
 
 1. Load the dependency in the route, layout, or route-local container.
-2. Keep critical data in the route loader with `ensureQueryData` and Suspense.
+2. Keep critical data in the route loader with `queryClient.query(...)` (awaited) and Suspense.
 3. Keep optional/search data in the route/container with local `useQuery`.
 4. Pass data, loading flags, error flags, and errors through props.
 5. Disable submit-critical actions while the injected dependency is loading or errored.
