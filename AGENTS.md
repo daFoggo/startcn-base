@@ -14,6 +14,10 @@ This file is the fast entry point for agents. The detailed source of truth lives
    - `docs/handbook/06_quality_rules.md`
    - `docs/handbook/07_development_checklist.md`
    - `docs/handbook/08_zustand_best_practices.md`
+   - `docs/handbook/09_i18n.md`
+   - `docs/handbook/10_design_tokens.md`
+   - `docs/handbook/11_tanstack_form.md`
+   - `docs/handbook/12_tanstack_table.md`
 
 ## Core Architecture Rules
 
@@ -79,7 +83,9 @@ Every async UI must distinguish loading, error, and valid empty data.
 
 - Prefer small, scoped changes that match existing code patterns.
 - Run checks after major multi-file work:
-  - `pnpm exec biome check --write`
+  - `pnpm lint`
+  - `pnpm check`
+  - `pnpm test`
   - `pnpm typecheck`
   - `pnpm build`
 - Do not run expensive checks repeatedly for tiny edits unless requested.
