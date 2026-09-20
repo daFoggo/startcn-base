@@ -41,6 +41,7 @@ Font tokens are defined in `src/styles.css`:
 | `--font-sans` | Body, UI text, default headings |
 | `--font-mono` | Numbers, data, code, timestamps, IDs |
 | `--font-heading` | Optional display/heading face |
+| `--font-logo` | Brand logo only (Funnel Display Variable) |
 
 Rules:
 
@@ -48,7 +49,7 @@ Rules:
 - No arbitrary `text-[...]`.
 - `font-normal` (400) / `font-medium` (500) / `font-semibold` (600) / `font-bold` (700).
 - Note: shadcn primitives may carry internal arbitrary values (e.g. `text-[0.8rem]`); project code must not.
-- Brand-specific font families (which face maps to `--font-sans`/`--font-heading`) are a project decision, not a base rule.
+- Brand-specific font families (which face maps to `--font-sans`/`--font-heading`/`--font-logo`) are a project decision, not a base rule.
 
 ## Spacing
 
@@ -59,7 +60,24 @@ Rules:
 
 ## Radius
 
-Radius is driven by the `--radius` token in `src/styles.css` (overrides the rounded scale). Use `rounded-lg/2xl/3xl` for surfaces and `rounded-full` only for pills, avatars, and circular controls. Do not add `rounded-*` overrides to primitives that already define their shape. The actual radius value (square vs soft) is a brand/project decision, not a base rule.
+Radius is driven by the `--radius` token in `src/styles.css` (overrides the rounded scale).
+
+**Primitives tự định hình radius sẵn — không cần tự làm round lại:**
+
+| Primitive | Radius mặc định |
+|---|---|
+| `Button` | `rounded-lg` |
+| `Card` | `rounded-xl` |
+| `Input`, `Textarea`, `Select` | `rounded-lg` |
+| `Badge` | `rounded-4xl` (pill) |
+| `Avatar` | `rounded-full` |
+
+Rules:
+
+- Chỉ cần **sử dụng primitives sẵn có** — mọi surface, pill, avatar, badge đều đã có radius đúng. Không thêm `rounded-*` vào primitives đã định hình shape.
+- Dùng **`Badge`** cho mọi pill/tag/label. Không chế lại component pill riêng bằng `span` + class tự viết — `Badge` đã có variant (`default`/`secondary`/`destructive`/`outline`/`ghost`/`link`) và các trạng thái (hover, focus ring, destructive, icon) sẵn.
+- `rounded-full` chỉ dùng cho trường hợp thật sự cần hình tròn ngoài primitives (ví dụ một shape custom đặc biệt); avatars và badges không nằm trong nhóm này vì đã có sẵn.
+- The actual radius value (square vs soft) is a brand/project decision, not a base rule.
 
 ## Icons
 

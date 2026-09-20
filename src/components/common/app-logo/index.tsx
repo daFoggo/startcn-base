@@ -1,4 +1,4 @@
-import { IconBrandReact } from "@tabler/icons-react";
+import { IconHomeSpark } from "@tabler/icons-react";
 import { SITE_CONFIG } from "@/configs/site";
 import { cn } from "@/lib/utils";
 
@@ -24,8 +24,8 @@ export const AppLogo = ({
 				: "text-2xl";
 
 	return (
-		<div className={cn("flex items-center gap-2 font-title", className)}>
-			{!hideIcon && <IconBrandReact className={iconSize} />}
+		<div className={cn("flex items-center gap-2 font-logo", className)}>
+			{!hideIcon && <IconHomeSpark className={iconSize} />}
 			{!hideTitle && (
 				<span className={cn("font-semibold", titleSize)}>
 					{SITE_CONFIG.app.title}

@@ -1,16 +1,18 @@
-import {
-	IconAlertCircle,
-	IconLoader2,
-	IconLock,
-	IconMail,
-} from "@tabler/icons-react";
+import { IconAlertCircle, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useForm } from "@tanstack/react-form";
 import * as React from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+	InputGroup,
+	InputGroupAddon,
+	InputGroupButton,
+	InputGroupInput,
+} from "@/components/ui/input-group";
 import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 import { getErrorMessage } from "@/lib/error";
-import { useI18n } from "@/lib/i18n";
 import { useLoginMutation } from "../queries";
 import { LoginInputSchema } from "../schemas";
 
@@ -30,7 +32,7 @@ const getFieldError = (err: unknown): string => {
 export const SignInForm = ({ onSuccess }: SignInFormProps) => {
 	const loginMutation = useLoginMutation();
 	const [serverError, setServerError] = React.useState<string | null>(null);
-	const { t } = useI18n("auth");
+	const [showPassword, setShowPassword] = React.useState(false);
 
 	const form = useForm({
 		defaultValues: {
@@ -46,7 +48,12 @@ export const SignInForm = ({ onSuccess }: SignInFormProps) => {
 				await loginMutation.mutateAsync(value);
 				onSuccess?.();
 			} catch (err) {
-				setServerError(getErrorMessage(err, t("signInError")));
+				setServerError(
+					getErrorMessage(
+						err,
+						"Sign in failed. Please verify your email and password.",
+					),
+				);
 			}
 		},
 	});
@@ -58,13 +65,13 @@ export const SignInForm = ({ onSuccess }: SignInFormProps) => {
 				e.stopPropagation();
 				form.handleSubmit();
 			}}
-			className="flex flex-col gap-4 pt-1"
+			className="flex flex-col gap-4"
 		>
 			{serverError && (
-				<div className="flex items-start gap-2.5 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
-					<IconAlertCircle className="mt-0.5 size-4 shrink-0" />
-					<span className="leading-snug">{serverError}</span>
-				</div>
+				<Alert variant="destructive">
+					<IconAlertCircle />
+					<AlertDescription>{serverError}</AlertDescription>
+				</Alert>
 			)}
 
 			<form.Field
@@ -80,27 +87,19 @@ export const SignInForm = ({ onSuccess }: SignInFormProps) => {
 					const errorMsg = getFieldError(field.state.meta.errors[0]);
 					return (
 						<div className="flex flex-col gap-1.5">
-							<Label
-								htmlFor={field.name}
-								className="text-xs font-medium text-foreground"
-							>
-								{t("email")}
-							</Label>
-							<div className="relative">
-								<Input
-									id={field.name}
-									name={field.name}
-									type="email"
-									placeholder={t("emailPlaceholder")}
-									value={field.state.value}
-									onBlur={field.handleBlur}
-									onChange={(e) => field.handleChange(e.target.value)}
-									disabled={loginMutation.isPending}
-									aria-invalid={field.state.meta.errors.length > 0}
-									className="h-10 px-3 pl-9 text-sm"
-								/>
-								<IconMail className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-							</div>
+							<Label htmlFor={field.name}>Email</Label>
+							<Input
+								id={field.name}
+								name={field.name}
+								type="email"
+								autoComplete="email"
+								placeholder="you@example.com"
+								value={field.state.value}
+								onBlur={field.handleBlur}
+								onChange={(e) => field.handleChange(e.target.value)}
+								disabled={loginMutation.isPending}
+								aria-invalid={field.state.meta.errors.length > 0}
+							/>
 							{errorMsg && (
 								<p className="text-xs font-medium text-destructive">
 									{errorMsg}
@@ -124,27 +123,32 @@ export const SignInForm = ({ onSuccess }: SignInFormProps) => {
 					const errorMsg = getFieldError(field.state.meta.errors[0]);
 					return (
 						<div className="flex flex-col gap-1.5">
-							<Label
-								htmlFor={field.name}
-								className="text-xs font-medium text-foreground"
-							>
-								{t("password")}
-							</Label>
-							<div className="relative">
-								<Input
+							<Label htmlFor={field.name}>Password</Label>
+							<InputGroup>
+								<InputGroupInput
 									id={field.name}
 									name={field.name}
-									type="password"
-									placeholder={t("passwordPlaceholder")}
+									type={showPassword ? "text" : "password"}
+									autoComplete="current-password"
+									placeholder="Enter your password"
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
 									disabled={loginMutation.isPending}
 									aria-invalid={field.state.meta.errors.length > 0}
-									className="h-10 px-3 pl-9 text-sm"
 								/>
-								<IconLock className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-							</div>
+								<InputGroupAddon align="inline-end">
+									<InputGroupButton
+										size="icon-xs"
+										aria-label={
+											showPassword ? "Hide password" : "Show password"
+										}
+										onClick={() => setShowPassword((prev) => !prev)}
+									>
+										{showPassword ? <IconEyeOff /> : <IconEye />}
+									</InputGroupButton>
+								</InputGroupAddon>
+							</InputGroup>
 							{errorMsg && (
 								<p className="text-xs font-medium text-destructive">
 									{errorMsg}
@@ -167,11 +171,11 @@ export const SignInForm = ({ onSuccess }: SignInFormProps) => {
 					>
 						{loginMutation.isPending || isSubmitting ? (
 							<>
-								<IconLoader2 className="mr-2 size-4 animate-spin" />
-								{t("signingIn")}
+								<Spinner className="mr-2" />
+								Signing in...
 							</>
 						) : (
-							t("signIn")
+							"Sign in"
 						)}
 					</Button>
 				)}

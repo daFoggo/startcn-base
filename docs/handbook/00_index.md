@@ -13,7 +13,7 @@ This folder is the canonical documentation set for the reusable base frontend ar
 | 1 | `01_project_overview.md` | Product scope, frontend role, and tech stack |
 | 2 | `02_architecture.md` | App architecture, feature boundaries, route orchestration |
 | 3 | `03_feature_development.md` | How to build or refactor a feature module |
-| 4 | `04_tanstack_start_query_router.md` | TanStack Start, Router, Query, Supabase, SSR data rules |
+| 4 | `04_tanstack_start_query_router.md` | TanStack Start, Router, Query, SSR data rules + both data source patterns (Supabase & AnnoBot ky backend) |
 | 5 | `05_ui_state_patterns.md` | Loading, error, empty, compact UI, and form action states |
 | 6 | `06_quality_rules.md` | Consistency rules, checks, and review expectations |
 | 7 | `07_development_checklist.md` | Practical development and review checklist |
@@ -27,6 +27,7 @@ Project-specific references (not part of the base, per-project):
 
 | Document | Purpose |
 |---|---|
+| `docs/design-system/typography-and-spacing.md` | Type scale, spacing, and dashboard layout standards |
 | `docs/project/reference-styles.md` | Visual treatment reference for a specific site/brand |
 
 ## Mandatory Agent Rule Files
@@ -42,8 +43,8 @@ Automation agents and coding assistants should read `AGENTS.md` at the project r
 - Route loaders decide criticality: `queryClient.query()` awaited blocks, fire-and-forget warms cache.
 - Critical data uses Suspense and route error boundaries.
 - Optional widgets use local `useQuery` states.
-- Supabase client access is centralized in `src/utils/supabase.ts`.
-- Auth and data mutations use the Supabase JS client, not a hand-rolled HTTP client.
+- Two data sources, both accessed via feature `server.ts` + `functions.ts`: the AnnoBot HTTP backend through the shared `ky` instance (`src/lib/ky.ts`) and Supabase through the shared client (`src/utils/supabase.ts`). Neither client is called from `queries.ts` or components.
+- Auth uses the AnnoBot backend: tokens live in a server session cookie, `ky` attaches the Bearer header and auto-refreshes on 401.
 - Zustand is for synchronous client/transient UI state only; do not mirror server state in Zustand.
 - Always use atomic selectors or `useShallow` with Zustand stores to prevent unnecessary re-renders.
 - UI state handling is mandatory for every async UI surface.

@@ -3,8 +3,20 @@ import {
 	useMutation,
 	useQueryClient,
 } from "@tanstack/react-query";
-import { isSupabaseConfigured, supabase } from "@/utils/supabase";
-import type { AuthUser, LoginInput } from "./schemas";
+import {
+	getMeFn,
+	refreshSessionFn,
+	signInFn,
+	signOutFn,
+	signUpFn,
+	updateProfileFn,
+} from "./functions";
+import type {
+	AuthUser,
+	LoginInput,
+	ProfileUpdateInput,
+	SignUpInput,
+} from "./schemas";
 
 export const authKeys = {
 	all: ["auth"] as const,
@@ -12,81 +24,73 @@ export const authKeys = {
 };
 
 /**
- * Query options lấy thông tin người dùng hiện tại từ Supabase Session gốc.
- * Nếu Supabase chưa được cấu hình, trả về null an toàn mà không throw lỗi.
+ * Query options lấy thông tin user hiện tại.
+ * Gọi server function `getMeFn` (đọc session cookie, gọi `/users/me` qua ky).
+ * - Không có access token trong session → trả `null` (chưa đăng nhập).
  */
 export const getMeQueryOptions = () =>
 	queryOptions({
 		queryKey: authKeys.me(),
-		queryFn: async (): Promise<AuthUser | null> => {
-			if (!isSupabaseConfigured) {
-				return null;
-			}
-
-			const {
-				data: { session },
-				error,
-			} = await supabase.auth.getSession();
-
-			if (error) throw error;
-			if (!session?.user) return null;
-
-			return {
-				id: session.user.id,
-				email: session.user.email ?? "",
-				createdAt: session.user.created_at,
-			};
-		},
+		queryFn: (): Promise<AuthUser | null> => getMeFn(),
 		staleTime: 1000 * 60 * 5, // 5 minutes
 	});
 
 /**
- * Mutation Hook xử lý đăng nhập
+ * Mutation Hook đăng nhập (`POST /auth/sign-in` qua server function).
+ * Server lưu tokens vào session cookie, rồi cache user vào `authKeys.me()`.
  */
 export const useLoginMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (input: LoginInput) => {
-			if (!isSupabaseConfigured) {
-				throw new Error(
-					"Supabase is not configured. Please set VITE_SUPABASE_URL and VITE_SUPABASE_KEY in your .env file.",
-				);
-			}
-
-			const { data, error } = await supabase.auth.signInWithPassword({
-				email: input.email,
-				password: input.password,
-			});
-			if (error) throw error;
-			return data;
-		},
+		mutationFn: (input: LoginInput) => signInFn({ data: input }),
 		onSuccess: async (data) => {
-			queryClient.setQueryData(authKeys.me(), {
-				id: data.user.id,
-				email: data.user.email ?? "",
-				createdAt: data.user.created_at,
-			});
+			queryClient.setQueryData(authKeys.me(), data.user_info);
 			await queryClient.invalidateQueries({ queryKey: authKeys.me() });
 		},
 	});
 };
 
 /**
- * Mutation Hook xử lý đăng xuất
+ * Mutation Hook đăng ký (`POST /auth/sign-up`).
+ * Backend KHÔNG tự cấp token sau sign-up — user phải sign in.
+ */
+export const useSignUpMutation = () =>
+	useMutation({
+		mutationFn: (input: SignUpInput) => signUpFn({ data: input }),
+	});
+
+/**
+ * Mutation Hook refresh token (`POST /auth/refresh`).
+ */
+export const useRefreshTokensMutation = () =>
+	useMutation({
+		mutationFn: async () => refreshSessionFn(),
+	});
+
+/**
+ * Mutation Hook cập nhật profile (`PATCH /users/me/profile`).
+ */
+export const useUpdateProfileMutation = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (input: ProfileUpdateInput) => updateProfileFn({ data: input }),
+		onSuccess: async (data) => {
+			queryClient.setQueryData(authKeys.me(), data);
+			await queryClient.invalidateQueries({ queryKey: authKeys.me() });
+		},
+	});
+};
+
+/**
+ * Mutation Hook đăng xuất — xóa session cookie và clear cache.
  */
 export const useLogoutMutation = () => {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async () => {
-			if (!isSupabaseConfigured) {
-				return;
-			}
-
-			const { error } = await supabase.auth.signOut();
-			if (error) throw error;
-		},
+		mutationFn: async () => signOutFn(),
 		onSuccess: async () => {
 			queryClient.setQueryData(authKeys.me(), null);
 			queryClient.clear();

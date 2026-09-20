@@ -5,15 +5,14 @@ import {
 	createRootRouteWithContext,
 	HeadContent,
 	Scripts,
-	useRouterState,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { ErrorFallback, NotFound } from "@/components/common/error-pages";
 import { QueryProvider } from "@/components/common/query-provider";
 import { ThemeProvider } from "@/components/common/theme-provider";
 import { ToasterProvider } from "@/components/common/toaster-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { SITE_CONFIG } from "@/configs/site";
-import { getLocaleFromPathname, I18nProvider } from "@/lib/i18n";
 import { getThemeServerFn, storageKey } from "@/lib/theme";
 import type { IRouterContext } from "@/router";
 import appCss from "../styles.css?url";
@@ -21,9 +20,6 @@ import appCss from "../styles.css?url";
 const RootDocument = ({ children }: { children: React.ReactNode }) => {
 	const theme = Route.useLoaderData();
 	const { queryClient } = Route.useRouteContext();
-	const locale = useRouterState({
-		select: (s) => getLocaleFromPathname(s.location.pathname),
-	});
 
 	const initialThemeScript = `
 		(() => {
@@ -44,7 +40,7 @@ const RootDocument = ({ children }: { children: React.ReactNode }) => {
 
 	return (
 		<html
-			lang={locale}
+			lang="en"
 			className={theme === "dark" ? "dark" : "light"}
 			suppressHydrationWarning
 		>
@@ -55,10 +51,10 @@ const RootDocument = ({ children }: { children: React.ReactNode }) => {
 			<body suppressHydrationWarning>
 				<QueryProvider client={queryClient}>
 					<ThemeProvider theme={theme}>
-						<I18nProvider>
+						<TooltipProvider>
 							{children}
 							<ToasterProvider />
-						</I18nProvider>
+						</TooltipProvider>
 					</ThemeProvider>
 				</QueryProvider>
 				<TanStackDevtools

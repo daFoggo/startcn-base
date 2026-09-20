@@ -15,13 +15,13 @@ The project comes preconfigured with 3 font variables:
 |-------|------|----------|
 | `--font-sans` | Geist Variable | Body, heading, UI text |
 | `--font-mono` | Geist Mono Variable | Code, data values, IDs, timestamps |
-| `--font-title` | Funnel Display Variable | Brand logo, marketing headline (rarely used in dashboard) |
+| `--font-logo` | Funnel Display Variable | Brand logo only |
 
 **Rules:**
 
 - Dashboards predominantly use `font-sans`.
 - Only use `font-mono` for: IDs, connection strings, database column types, log timestamps, and metric values.
-- Do not use `font-title` for standard UI text.
+- Do not use `font-logo` anywhere except the app logo.
 
 ### Type Scale
 

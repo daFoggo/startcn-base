@@ -42,12 +42,58 @@ Responsibilities:
 
 | File | Responsibility |
 |---|---|
-| `server.ts` | Server-only IO and Ky/API calls |
-| `functions.ts` | `createServerFn` wrappers and validation |
+| `server.ts` | Server-only IO: Supabase access và/hoặc AnnoBot HTTP calls qua ky (`api` từ `@/lib/ky`) |
+| `functions.ts` | `createServerFn` wrappers và validation |
 | `queries.ts` | Query key factories, `queryOptions`, mutation hooks |
-| `schemas.ts` | Zod schemas and exported types |
+| `schemas.ts` | Zod schemas và exported types |
 | `components/` | Cross-page / shared / cross-cutting feature UI |
 | `index.ts` | Client-safe public API |
+
+## Two Data Backends
+
+The app has two supported data sources. Both follow the **same** feature shape: IO lives in `server.ts`, is wrapped by `createServerFn` in `functions.ts`, and is consumed through `queries.ts`. Never call either client directly from `queries.ts` or components.
+
+| | Supabase | AnnoBot HTTP backend (ky) |
+|---|---|---|
+| Client | `@supabase/supabase-js` — shared instance in `src/utils/supabase.ts` | `ky` — shared instance `api` in `src/lib/ky.ts` |
+| IO location | feature `server.ts` (server-only) | feature `server.ts` (server-only, imports `@tanstack/react-start/server-only`) |
+| Response shape | Supabase `{ data, error }` — check `error`, translate `PGRST116` → `notFound()` | `ResponseSchema<T>` (`{ success, message, data }`) — unwrap `response.data` |
+| Auth | server-side session (e.g. `supabase.auth`) | Bearer token tự động gắn bởi ky (server session cookie), 401 → refresh → retry |
+| Error handling | `getErrorMessage(error, fallback)` | `getErrorMessage(error, fallback)` |
+
+Example (Supabase, feature `server.ts`):
+
+```ts
+import "@tanstack/react-start/server-only";
+import { supabase } from "@/utils/supabase";
+
+export const getUserById = async (userId: string) => {
+	const { data, error } = await supabase
+		.from("users")
+		.select("*")
+		.eq("id", userId)
+		.single();
+	if (error) throw error;
+	return data;
+};
+```
+
+Example (ky, feature `server.ts`):
+
+```ts
+import "@tanstack/react-start/server-only";
+import { api } from "@/lib/ky";
+import type { TBaseResponse } from "@/types/api";
+
+export const getExperiment = async (id: string) => {
+	const response = await api
+		.get(`experiments/${id}`)
+		.json<TBaseResponse<Experiment>>();
+	return response.data;
+};
+```
+
+Both are then wrapped in `functions.ts` (`createServerFn` + validator) and exposed through `queries.ts` (`queryOptions` + mutation hooks). See `04_tanstack_start_query_router.md` → "Two Data Source Patterns" for the full playbook.
 
 A feature is a **vertical slice**: it owns the data contract AND the UI that renders that data where the UI crosses page boundaries (a preview used on the home page and its own page, a dialog triggered from many places, an auth button). Page-local views of a feature's data live with the route that renders them (see Component Placement Rule below).
 

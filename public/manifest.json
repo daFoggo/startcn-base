@@ -1,5 +1,5 @@
 {
-  "short_name": "startcn-base",
+  "short_name": "AnnoBot",
   "name": "startcn-base — Production-Ready Starter",
   "description": "Production-ready web application starter built with TanStack Start, React 19, shadcn/ui, Tailwind CSS v4, and Supabase.",
   "icons": [

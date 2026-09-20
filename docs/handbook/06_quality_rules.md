@@ -45,6 +45,7 @@ Canonical token rules live in `10_design_tokens.md`. Summary:
 
 ## Component Rules
 
+- **Use existing primitives first.** Everything in `src/components/ui/` is the design system — check it before writing any UI markup. If the primitive exists, use it — do not re-create it.
 - Prefer existing `@/components/ui` and `@/components/common` components.
 - Place components by scope of reuse + domain coupling (`02_architecture.md` → Component Placement Rule): page-local views go in `routes/<area>/-components/`, cross-page feature views in `features/[f]/components/`, domain-agnostic app-wide UI in `components/common`. Promote a route-local component into a feature when it gains a second consumer.
 - Add a new component only when existing components cannot be composed cleanly.

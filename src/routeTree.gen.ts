@@ -10,33 +10,191 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardRouteRouteImport } from './routes/_dashboard/route'
+import { Route as AuthRouteRouteImport } from './routes/auth/route'
+import { Route as AuthIndexRouteImport } from './routes/auth/index'
+import { Route as AuthSignInRouteImport } from './routes/auth/sign-in'
+import { Route as AuthSignUpRouteImport } from './routes/auth/sign-up'
+import { Route as DashboardDashboardIndexRouteImport } from './routes/_dashboard/dashboard/index'
+import { Route as DashboardDashboardAnalyticsRouteImport } from './routes/_dashboard/dashboard/analytics'
+import { Route as DashboardDashboardLogsRouteImport } from './routes/_dashboard/dashboard/logs'
+import { Route as DashboardDashboardSettingsRouteRouteImport } from './routes/_dashboard/dashboard/settings/route'
+import { Route as DashboardDashboardUsersRouteImport } from './routes/_dashboard/dashboard/users'
+import { Route as DashboardDashboardSettingsIndexRouteImport } from './routes/_dashboard/dashboard/settings/index'
+import { Route as DashboardDashboardSettingsNotificationsRouteImport } from './routes/_dashboard/dashboard/settings/notifications'
+import { Route as DashboardDashboardSettingsSecurityRouteImport } from './routes/_dashboard/dashboard/settings/security'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRouteRoute = DashboardRouteRouteImport.update({
+  id: '/_dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRouteRoute = AuthRouteRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthIndexRoute = AuthIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthSignInRoute = AuthSignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthSignUpRoute = AuthSignUpRouteImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const DashboardDashboardIndexRoute = DashboardDashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardDashboardAnalyticsRoute =
+  DashboardDashboardAnalyticsRouteImport.update({
+    id: '/dashboard/analytics',
+    path: '/dashboard/analytics',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardDashboardLogsRoute = DashboardDashboardLogsRouteImport.update({
+  id: '/dashboard/logs',
+  path: '/dashboard/logs',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardDashboardSettingsRouteRoute =
+  DashboardDashboardSettingsRouteRouteImport.update({
+    id: '/dashboard/settings',
+    path: '/dashboard/settings',
+    getParentRoute: () => DashboardRouteRoute,
+  } as any)
+const DashboardDashboardUsersRoute = DashboardDashboardUsersRouteImport.update({
+  id: '/dashboard/users',
+  path: '/dashboard/users',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardDashboardSettingsIndexRoute =
+  DashboardDashboardSettingsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DashboardDashboardSettingsRouteRoute,
+  } as any)
+const DashboardDashboardSettingsNotificationsRoute =
+  DashboardDashboardSettingsNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => DashboardDashboardSettingsRouteRoute,
+  } as any)
+const DashboardDashboardSettingsSecurityRoute =
+  DashboardDashboardSettingsSecurityRouteImport.update({
+    id: '/security',
+    path: '/security',
+    getParentRoute: () => DashboardDashboardSettingsRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRouteRouteWithChildren
+  '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
+  '/auth/': typeof AuthIndexRoute
+  '/dashboard/settings': typeof DashboardDashboardSettingsRouteRouteWithChildren
+  '/dashboard/analytics': typeof DashboardDashboardAnalyticsRoute
+  '/dashboard/logs': typeof DashboardDashboardLogsRoute
+  '/dashboard/users': typeof DashboardDashboardUsersRoute
+  '/dashboard/': typeof DashboardDashboardIndexRoute
+  '/dashboard/settings/notifications': typeof DashboardDashboardSettingsNotificationsRoute
+  '/dashboard/settings/security': typeof DashboardDashboardSettingsSecurityRoute
+  '/dashboard/settings/': typeof DashboardDashboardSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
+  '/auth': typeof AuthIndexRoute
+  '/dashboard/analytics': typeof DashboardDashboardAnalyticsRoute
+  '/dashboard/logs': typeof DashboardDashboardLogsRoute
+  '/dashboard/users': typeof DashboardDashboardUsersRoute
+  '/dashboard': typeof DashboardDashboardIndexRoute
+  '/dashboard/settings/notifications': typeof DashboardDashboardSettingsNotificationsRoute
+  '/dashboard/settings/security': typeof DashboardDashboardSettingsSecurityRoute
+  '/dashboard/settings': typeof DashboardDashboardSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_dashboard': typeof DashboardRouteRouteWithChildren
+  '/auth': typeof AuthRouteRouteWithChildren
+  '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
+  '/auth/': typeof AuthIndexRoute
+  '/_dashboard/dashboard/settings': typeof DashboardDashboardSettingsRouteRouteWithChildren
+  '/_dashboard/dashboard/analytics': typeof DashboardDashboardAnalyticsRoute
+  '/_dashboard/dashboard/logs': typeof DashboardDashboardLogsRoute
+  '/_dashboard/dashboard/users': typeof DashboardDashboardUsersRoute
+  '/_dashboard/dashboard/': typeof DashboardDashboardIndexRoute
+  '/_dashboard/dashboard/settings/notifications': typeof DashboardDashboardSettingsNotificationsRoute
+  '/_dashboard/dashboard/settings/security': typeof DashboardDashboardSettingsSecurityRoute
+  '/_dashboard/dashboard/settings/': typeof DashboardDashboardSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/auth/sign-in'
+    | '/auth/sign-up'
+    | '/auth/'
+    | '/dashboard/settings'
+    | '/dashboard/analytics'
+    | '/dashboard/logs'
+    | '/dashboard/users'
+    | '/dashboard/'
+    | '/dashboard/settings/notifications'
+    | '/dashboard/settings/security'
+    | '/dashboard/settings/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth/sign-in'
+    | '/auth/sign-up'
+    | '/auth'
+    | '/dashboard/analytics'
+    | '/dashboard/logs'
+    | '/dashboard/users'
+    | '/dashboard'
+    | '/dashboard/settings/notifications'
+    | '/dashboard/settings/security'
+    | '/dashboard/settings'
+  id:
+    | '__root__'
+    | '/'
+    | '/_dashboard'
+    | '/auth'
+    | '/auth/sign-in'
+    | '/auth/sign-up'
+    | '/auth/'
+    | '/_dashboard/dashboard/settings'
+    | '/_dashboard/dashboard/analytics'
+    | '/_dashboard/dashboard/logs'
+    | '/_dashboard/dashboard/users'
+    | '/_dashboard/dashboard/'
+    | '/_dashboard/dashboard/settings/notifications'
+    | '/_dashboard/dashboard/settings/security'
+    | '/_dashboard/dashboard/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
+  AuthRouteRoute: typeof AuthRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +206,161 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_dashboard': {
+      id: '/_dashboard'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof DashboardRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/': {
+      id: '/auth/'
+      path: '/'
+      fullPath: '/auth/'
+      preLoaderRoute: typeof AuthIndexRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/auth/sign-in': {
+      id: '/auth/sign-in'
+      path: '/sign-in'
+      fullPath: '/auth/sign-in'
+      preLoaderRoute: typeof AuthSignInRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/auth/sign-up': {
+      id: '/auth/sign-up'
+      path: '/sign-up'
+      fullPath: '/auth/sign-up'
+      preLoaderRoute: typeof AuthSignUpRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_dashboard/dashboard/': {
+      id: '/_dashboard/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardDashboardIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/_dashboard/dashboard/analytics': {
+      id: '/_dashboard/dashboard/analytics'
+      path: '/dashboard/analytics'
+      fullPath: '/dashboard/analytics'
+      preLoaderRoute: typeof DashboardDashboardAnalyticsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/_dashboard/dashboard/logs': {
+      id: '/_dashboard/dashboard/logs'
+      path: '/dashboard/logs'
+      fullPath: '/dashboard/logs'
+      preLoaderRoute: typeof DashboardDashboardLogsRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/_dashboard/dashboard/settings': {
+      id: '/_dashboard/dashboard/settings'
+      path: '/dashboard/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardDashboardSettingsRouteRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/_dashboard/dashboard/users': {
+      id: '/_dashboard/dashboard/users'
+      path: '/dashboard/users'
+      fullPath: '/dashboard/users'
+      preLoaderRoute: typeof DashboardDashboardUsersRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/_dashboard/dashboard/settings/': {
+      id: '/_dashboard/dashboard/settings/'
+      path: '/'
+      fullPath: '/dashboard/settings/'
+      preLoaderRoute: typeof DashboardDashboardSettingsIndexRouteImport
+      parentRoute: typeof DashboardDashboardSettingsRouteRoute
+    }
+    '/_dashboard/dashboard/settings/notifications': {
+      id: '/_dashboard/dashboard/settings/notifications'
+      path: '/notifications'
+      fullPath: '/dashboard/settings/notifications'
+      preLoaderRoute: typeof DashboardDashboardSettingsNotificationsRouteImport
+      parentRoute: typeof DashboardDashboardSettingsRouteRoute
+    }
+    '/_dashboard/dashboard/settings/security': {
+      id: '/_dashboard/dashboard/settings/security'
+      path: '/security'
+      fullPath: '/dashboard/settings/security'
+      preLoaderRoute: typeof DashboardDashboardSettingsSecurityRouteImport
+      parentRoute: typeof DashboardDashboardSettingsRouteRoute
+    }
   }
 }
 
+interface DashboardDashboardSettingsRouteRouteChildren {
+  DashboardDashboardSettingsNotificationsRoute: typeof DashboardDashboardSettingsNotificationsRoute
+  DashboardDashboardSettingsSecurityRoute: typeof DashboardDashboardSettingsSecurityRoute
+  DashboardDashboardSettingsIndexRoute: typeof DashboardDashboardSettingsIndexRoute
+}
+
+const DashboardDashboardSettingsRouteRouteChildren: DashboardDashboardSettingsRouteRouteChildren =
+  {
+    DashboardDashboardSettingsNotificationsRoute:
+      DashboardDashboardSettingsNotificationsRoute,
+    DashboardDashboardSettingsSecurityRoute:
+      DashboardDashboardSettingsSecurityRoute,
+    DashboardDashboardSettingsIndexRoute: DashboardDashboardSettingsIndexRoute,
+  }
+
+const DashboardDashboardSettingsRouteRouteWithChildren =
+  DashboardDashboardSettingsRouteRoute._addFileChildren(
+    DashboardDashboardSettingsRouteRouteChildren,
+  )
+
+interface DashboardRouteRouteChildren {
+  DashboardDashboardSettingsRouteRoute: typeof DashboardDashboardSettingsRouteRouteWithChildren
+  DashboardDashboardAnalyticsRoute: typeof DashboardDashboardAnalyticsRoute
+  DashboardDashboardLogsRoute: typeof DashboardDashboardLogsRoute
+  DashboardDashboardUsersRoute: typeof DashboardDashboardUsersRoute
+  DashboardDashboardIndexRoute: typeof DashboardDashboardIndexRoute
+}
+
+const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardDashboardSettingsRouteRoute:
+    DashboardDashboardSettingsRouteRouteWithChildren,
+  DashboardDashboardAnalyticsRoute: DashboardDashboardAnalyticsRoute,
+  DashboardDashboardLogsRoute: DashboardDashboardLogsRoute,
+  DashboardDashboardUsersRoute: DashboardDashboardUsersRoute,
+  DashboardDashboardIndexRoute: DashboardDashboardIndexRoute,
+}
+
+const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
+  DashboardRouteRouteChildren,
+)
+
+interface AuthRouteRouteChildren {
+  AuthSignInRoute: typeof AuthSignInRoute
+  AuthSignUpRoute: typeof AuthSignUpRoute
+  AuthIndexRoute: typeof AuthIndexRoute
+}
+
+const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthSignInRoute: AuthSignInRoute,
+  AuthSignUpRoute: AuthSignUpRoute,
+  AuthIndexRoute: AuthIndexRoute,
+}
+
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
+  AuthRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRouteRoute: DashboardRouteRouteWithChildren,
+  AuthRouteRoute: AuthRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

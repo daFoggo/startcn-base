@@ -1,25 +1,27 @@
 ---
 name: tanstack-data-fetching
-description: Apply the canonical TanStack Start/Router/Query + Supabase data-fetching patterns. Use when writing or reviewing query functions, query keys/options, route loaders, mutations, or Supabase access. Covers the query contract, loader policy, suspense rules, and QueryClient lifecycle.
+description: Apply the canonical TanStack Start/Router/Query data-fetching patterns for both data sources (Supabase and the AnnoBot ky backend). Use when writing or reviewing query functions, query keys/options, route loaders, mutations, or Supabase/ky access. Covers the query contract, loader policy, suspense rules, and QueryClient lifecycle.
 ---
 
-# TanStack Start, Router, Query, and Supabase Patterns
+# TanStack Start, Router, Query, and Data Source Patterns
 
 ## When to Use
 
 - Writing a query function, key factory, or `queryOptions`.
 - Deciding route loader criticality and Suspense usage.
-- Adding a mutation, invalidating caches, or accessing Supabase.
+- Adding a mutation, invalidating caches, or accessing a data source (Supabase or AnnoBot ky backend).
 
 ## Approved Stack
 
 - TanStack Start for app/server function integration.
 - TanStack Router for routes, loaders, route context, error boundaries, and not-found handling.
 - TanStack Query for server-state caching, loading/error states, invalidation, retries, and mutations.
-- Supabase JS client for database, auth, and realtime access.
+- Two data sources, both accessed server-side through feature `server.ts` + `functions.ts`:
+  - **Supabase** JS client for database, auth, and realtime access (`src/utils/supabase.ts`).
+  - **AnnoBot HTTP backend** via the shared `ky` instance (`src/lib/ky.ts`).
 - Zod for validation.
 
-Do not introduce another server-state cache layer.
+Do not introduce another server-state cache layer or hand-rolled `fetch` wrappers.
 
 ## Query Function Contract
 
@@ -162,7 +164,7 @@ Do not use `useSuspenseQuery` for data that is only fire-and-forget prefetched.
 - Unknown failures should propagate to the nearest route error boundary.
 
 > [!NOTE]
-> The loader methods `ensureQueryData` and `prefetchQuery` are deprecated in TanStack Query and will be removed in the next major version. Use `queryClient.query(...)` instead: `await` it for critical route data, or fire it off with `void queryClient.query(...).catch(noop)` for secondary data. See the Query prefetching guide.
+> The loader methods `ensureQueryData` and `prefetchQuery` are deprecated in TanStack Query and will be removed in the next major version. Use `queryClient.query(...)` instead: `await` it for critical route data, or fire it off with `void queryClient.query(...).catch(noop)` for secondary data. `query()` refetches when the cached data is stale; if you want the exact `ensureQueryData` behavior (reuse the cache as-is, never refetch stale data), pass `{ ...options, staleTime: 'static' }`. See the Query prefetching guide.
 
 ## Mutation Policy
 
@@ -341,16 +343,53 @@ Rules:
 - Pass the same instance to router context and `QueryProvider`.
 - Clear query caches from auth mutation and account-switch flows when the signed-in identity changes.
 
-## Supabase Client Rules
+## Two Data Source Patterns
 
-Keep the client setup centralized in `src/utils/supabase.ts`.
+The app reads from two backends. Both must follow the same feature shape: IO in `server.ts`, wrapped by `createServerFn` in `functions.ts`, consumed by `queries.ts`. Do not call Supabase or `ky` directly from `queries.ts` or components.
+
+### Shared Rules (both sources)
+
+- `server.ts` is server-only: add `import "@tanstack/react-start/server-only"` at the top.
+- Query functions resolve valid data or throw; translate only known domain cases (e.g. `PGRST116` → `notFound()`, 404 → `notFound()`).
+- UI and mutation catch blocks use `getErrorMessage(error, fallback)` from `src/lib/error.ts`.
+- Do not swallow errors into empty arrays or fallback objects.
+
+### Supabase Pattern
+
+Client is centralized in `src/utils/supabase.ts` (single `createClient()` with `VITE_*` env vars) — never create ad-hoc clients.
+
+```ts
+// src/features/[feature]/server.ts
+import "@tanstack/react-start/server-only";
+import { supabase } from "@/utils/supabase";
+
+export const getUserById = async (userId: string) => {
+	const { data, error } = await supabase
+		.from("users")
+		.select("*")
+		.eq("id", userId)
+		.single();
+	if (error) throw error;
+	return data;
+};
+```
+
+```ts
+// src/features/[feature]/functions.ts
+import { createServerFn } from "@tanstack/react-start";
+
+export const getUserByIdFn = createServerFn({ method: "GET" })
+	.validator(z.object({ userId: z.string() }))
+	.handler(async ({ data }) => getUserById(data.userId));
+```
+
+Rules:
 
 - Use a single `createClient()` instance with the `VITE_*` env vars.
 - Use `select("*")` explicitly instead of relying on default projections.
 - Check `error` on every Supabase response; `data` can be `null` on errors.
 - For detail resources, use `.single()` and translate known no-row errors (e.g. `PGRST116`) into `notFound()`.
-- UI should call `getErrorMessage(error, fallback)` from `src/lib/error.ts`.
-- Do not swallow errors into empty arrays. `data ?? []` is only valid after a successful empty response.
+- Auth/session-aware code (e.g. `supabase.auth`) goes in feature `server.ts` behind a server function; the client session is read server-side, never in component queries.
 
 Correct:
 
@@ -363,6 +402,41 @@ Incorrect:
 - query functions return fallback data after a Supabase failure.
 - swallowing `error` and hiding failed UI behind empty states.
 - creating ad-hoc Supabase clients inside features.
+- calling `supabase` directly from `queries.ts` or components.
+
+### AnnoBot Backend (ky) Pattern
+
+The FastAPI backend (`anno-bot-merge`, base `http://localhost:40723`, prefix `/api/v1`) is accessed with the shared `ky` instance from `src/lib/ky.ts` — never hand-rolled `fetch` wrappers.
+
+```ts
+// src/features/[feature]/server.ts
+import "@tanstack/react-start/server-only";
+import { api } from "@/lib/ky";
+import type { TBaseResponse } from "@/types/api";
+
+export const getExperiment = async (id: string) => {
+	const response = await api
+		.get(`experiments/${id}`)
+		.json<TBaseResponse<Experiment>>();
+	return response.data;
+};
+```
+
+```ts
+// src/features/[feature]/functions.ts
+import { createServerFn } from "@tanstack/react-start";
+
+export const getExperimentFn = createServerFn({ method: "GET" })
+	.validator(z.object({ id: z.string() }))
+	.handler(async ({ data }) => getExperiment(data.id));
+```
+
+Rules:
+
+- The backend wraps every response in `ResponseSchema<T>` (`{ success, message, data }`); `server.ts` must unwrap `response.data`.
+- `ky` automatically attaches the Bearer token (from the server session cookie via `src/lib/auth-token.ts`), retries once on 401 after refreshing, and redirects to sign-in when refresh fails — do not reimplement auth on each call.
+- Check the exact endpoint contract in the backend OpenAPI (`http://localhost:40723/openapi.json`) before writing a `server.ts` call.
+- Feature auth is session-cookie based (`src/lib/session.server.ts`); `sign-in`/`sign-up`/`refresh` server functions update or clear that session.
 
 ## Server Boundary & Middleware (Start)
 

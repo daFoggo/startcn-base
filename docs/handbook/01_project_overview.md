@@ -7,7 +7,7 @@
 | Server state | TanStack Query |
 | Forms | TanStack Form |
 | Tables | TanStack Table (v9) |
-| Data platform | Supabase (JS client) |
+| Data sources | AnnoBot HTTP backend (ky) + Supabase (JS client) |
 | Validation | Zod |
 | Language | TypeScript 7 (native `tsc`) |
 | UI | React 19, shadcn/ui, Base UI |
@@ -16,6 +16,15 @@
 | Testing | Vitest |
 | Formatting/linting | Biome |
 | Build tooling | Vite |
+
+## Data Sources
+
+The app talks to two backends, both through feature `server.ts` + `functions.ts` (see `04_tanstack_start_query_router.md` → "Two Data Source Patterns"):
+
+- **AnnoBot HTTP backend** (`anno-bot-merge`, FastAPI at `http://localhost:40723/api/v1`) — primary data source, accessed with the shared `ky` instance from `src/lib/ky.ts`.
+- **Supabase** — database/auth/realtime, accessed with the shared client from `src/utils/supabase.ts`.
+
+Never call either client directly from `queries.ts` or components.
 
 ## Environment
 

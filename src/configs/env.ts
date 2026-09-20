@@ -11,6 +11,7 @@ const clientEnvSchema = z.object({
 		.url()
 		.default("https://placeholder.supabase.co"),
 	VITE_SUPABASE_KEY: z.string().default("placeholder-anon-key"),
+	VITE_API_URL: z.string().url().default("http://localhost:40723/api/v1"),
 });
 
 const parsed = clientEnvSchema.safeParse(import.meta.env);
@@ -26,12 +27,10 @@ export const isSupabaseConfigured = Boolean(
 	!import.meta.env.VITE_SUPABASE_URL.includes("<your-project>"),
 );
 
-if (
-	!isSupabaseConfigured &&
-	import.meta.env.DEV &&
-	typeof window !== "undefined"
-) {
+export const isApiConfigured = Boolean(clientEnv.VITE_API_URL);
+
+if (!isApiConfigured && import.meta.env.DEV && typeof window !== "undefined") {
 	console.info(
-		"[env] Supabase credentials not found in .env. Running with auth disabled.",
+		"[env] Backend API URL not found in .env. Using default http://localhost:40723/api/v1.",
 	);
 }

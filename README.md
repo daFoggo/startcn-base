@@ -1,5 +1,5 @@
 # Tanstack Start base
-Frontend web application base, built with **TanStack Start + React 19 + shadcn/ui + Tailwind CSS v4 + Supabase**.
+Frontend web application base, built with **TanStack Start + React 19 + shadcn/ui + Tailwind CSS v4**, talking to the **AnnoBot HTTP backend (ky)** and **Supabase**.
 
 ## Prerequisites
 
@@ -67,9 +67,18 @@ cp .env.example .env
 Fill in the values in `.env`:
 
 ```env
+VITE_API_URL=http://localhost:40723/api/v1
+SESSION_SECRET=a-long-random-secret-at-least-32-chars
 VITE_SUPABASE_URL=https://<your-project>.supabase.co
 VITE_SUPABASE_KEY=sb_publishable_...
 ```
+
+## Data Sources
+
+The app talks to two backends, both accessed through feature `server.ts` + `functions.ts` (see `docs/handbook/04_tanstack_start_query_router.md` → "Two Data Source Patterns"):
+
+- **AnnoBot HTTP backend** (`anno-bot-merge`, FastAPI at `http://localhost:40723/api/v1`) — primary data source, via the shared `ky` instance in `src/lib/ky.ts`. Auth tokens live in a server session cookie; `ky` attaches the Bearer header and auto-refreshes on 401.
+- **Supabase** — database/auth/realtime, via the shared client in `src/utils/supabase.ts` (`VITE_SUPABASE_URL` / `VITE_SUPABASE_KEY`).
 
 ### 5. Start the Dev Server
 
@@ -78,12 +87,6 @@ pnpm dev
 ```
 
 Open http://localhost:3000.
-
-## Supabase
-
-The app connects to Supabase through `@supabase/supabase-js`. The client is created once in `src/utils/supabase.ts` and reads `VITE_SUPABASE_URL` / `VITE_SUPABASE_KEY` from the environment.
-
-The home route (`src/routes/index.tsx`) demonstrates reading rows from the `todos` table. Create that table in the Supabase dashboard before relying on the demo.
 
 ## Common Commands
 
@@ -116,7 +119,7 @@ pnpm build
 | App framework | TanStack Start |
 | Routing | TanStack Router |
 | Server state | TanStack Query |
-| Data platform | Supabase |
+| Data sources | AnnoBot HTTP backend (ky) + Supabase |
 | Validation | Zod |
 | UI | React 19, shadcn/ui, Base UI |
 | Styling | Tailwind CSS v4 |
@@ -134,7 +137,7 @@ All architecture docs, conventions, and checklists live in `docs/handbook/`.
 | [`docs/handbook/01_project_overview.md`](docs/handbook/01_project_overview.md) | Project scope & tech stack |
 | [`docs/handbook/02_architecture.md`](docs/handbook/02_architecture.md) | Feature-based architecture & route orchestration |
 | [`docs/handbook/03_feature_development.md`](docs/handbook/03_feature_development.md) | Building & refactoring feature modules |
-| [`docs/handbook/04_tanstack_start_query_router.md`](docs/handbook/04_tanstack_start_query_router.md) | TanStack Start, Router, Query, Supabase, SSR |
+| [`docs/handbook/04_tanstack_start_query_router.md`](docs/handbook/04_tanstack_start_query_router.md) | TanStack Start, Router, Query, SSR + data source patterns |
 | [`docs/handbook/05_ui_state_patterns.md`](docs/handbook/05_ui_state_patterns.md) | Loading, error, empty, & form action states |
 | [`docs/handbook/06_quality_rules.md`](docs/handbook/06_quality_rules.md) | Consistency rules & review expectations |
 | [`docs/handbook/07_development_checklist.md`](docs/handbook/07_development_checklist.md) | Dev & review checklist |

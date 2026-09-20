@@ -1,6 +1,10 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
+import type {
+	DashboardCrumb,
+	DashboardProductMenu,
+} from "@/components/layout/dashboard/types";
 import { createQueryClient } from "@/lib/query-client";
 import { routeTree } from "./routeTree.gen";
 
@@ -45,10 +49,14 @@ declare module "@tanstack/react-router" {
 	interface IStaticDataRouteOption {
 		getTitle?: () => string;
 		navItems?: NavItem[];
+		breadcrumb?: DashboardCrumb;
+		productMenu?: DashboardProductMenu;
 	}
 
 	interface StaticDataRouteOption {
 		getTitle?: () => string;
 		navItems?: NavItem[];
+		breadcrumb?: DashboardCrumb;
+		productMenu?: DashboardProductMenu;
 	}
 }

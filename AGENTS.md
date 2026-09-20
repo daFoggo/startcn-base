@@ -63,11 +63,24 @@ src/features/[feature]/
 
 ## Supabase Rules
 
+Supabase is one of two supported data sources (the other is the AnnoBot HTTP backend, see below). It follows the same feature shape: Supabase IO lives in the feature's `server.ts`, wrapped by `createServerFn` in `functions.ts`, and consumed through `queries.ts`. Do not call the Supabase client directly from `queries.ts` or components — the base previously wired it inline and that is the pattern to fix.
+
 - Use the shared client from `src/utils/supabase.ts`. Do not create ad-hoc clients.
 - Check `error` on every Supabase response; `data` can be `null` on failures.
 - For detail resources use `.single()` and translate known no-row errors (e.g. `PGRST116`) into `notFound()`.
 - Do not swallow errors into empty arrays. `data ?? []` is only valid after a successful empty response.
 - UI and mutation catch blocks should use `getErrorMessage(error, fallback)` from `src/lib/error.ts`.
+- If a feature is auth/session-aware (e.g. uses `supabase.auth`), put it in the feature `server.ts` behind a server function; the client session is read server-side, never in component queries.
+
+## AnnoBot Backend (ky) Rules
+
+The AnnoBot FastAPI backend (`anno-bot-merge`) is the primary data source. It is accessed with the shared `ky` instance from `src/lib/ky.ts` — never hand-rolled `fetch` wrappers.
+
+- All HTTP IO lives in the feature's `server.ts` (server-only, imports `@tanstack/react-start/server-only`) and uses the `api` instance from `@/lib/ky`.
+- `functions.ts` wraps each `server.ts` call in a `createServerFn` with `.validator(...)`; `queries.ts` consumes those server functions.
+- The backend wraps every response in `ResponseSchema<T>` (`{ success, message, data }`); `server.ts` must unwrap `response.data`.
+- `ky` automatically attaches the Bearer token (from the server session cookie), retries once on 401, and redirects to sign-in when refresh fails — do not reimplement auth on each call.
+- Check the exact endpoint contract in the backend OpenAPI (`http://localhost:40723/openapi.json`) before writing a `server.ts` call.
 
 ## UI State Rules
 
@@ -78,6 +91,15 @@ Every async UI must distinguish loading, error, and valid empty data.
 - Empty: use a full empty state composition when data is valid but empty.
 - Do not silently hide failed queries by defaulting to `[]` or `null`.
 - If a query feeds submit-critical data, disable the action while loading or errored.
+
+## Component Rules (Use Existing, Don't Reinvent)
+
+- **Every UI element comes from an existing primitive in `src/components/ui/`.** Check that folder before writing custom markup.
+- Never hand-roll a styled `<button>`, `<a>`-as-button, badge/pill `<span>`, `<div>` card/alert/empty, or `<hr>` when the primitive exists.
+- Always use `<Badge>` for pills/tags, `<Skeleton>` for loading, `<Separator>` for dividers, `<Empty>` for empty states, `<Avatar>` (+ `AvatarFallback`), `<InputGroup>` for input+button, `FieldGroup`/`Field` for forms, `ToggleGroup` for 2–7 option sets.
+- Primitives' default shape is the design system: choose `variant`/`size` props, do not override `rounded-*`, `text-*`, or `px-*` on them.
+- If a primitive is missing, add it with the shadcn CLI (`npx shadcn@latest add <component>`), never hand-write a new UI primitive.
+- Use semantic theme tokens and Tailwind default scale only (see `10_design_tokens.md`). No arbitrary values, no raw palette colors, no manual `dark:` overrides.
 
 ## Quality Rules
 
