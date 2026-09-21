@@ -48,7 +48,7 @@ export const AuthButton = ({
 		);
 	}
 
-	// 2. Unauthenticated State: Sign In only (admin được tạo qua Supabase)
+	// 2. Unauthenticated State: Sign In only (tài khoản được tạo qua HTTP backend)
 	return (
 		<>
 			<Button

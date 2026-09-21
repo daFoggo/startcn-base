@@ -411,11 +411,11 @@ Call `resetAllStores()` in your auth sign-out flow. Pass the active client from 
 
 ```ts
 import { resetAllStores } from "@/stores/reset"
-import { supabase } from "@/utils/supabase"
+import { signOutFn } from "@/features/auth/functions"
 import type { QueryClient } from "@tanstack/react-query"
 
 export async function handleSignOut(queryClient: QueryClient) {
-  await supabase.auth.signOut()
+  await signOutFn() // server function xóa session cookie
   queryClient.clear()
   resetAllStores()
 }

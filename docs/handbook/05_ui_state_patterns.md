@@ -210,4 +210,4 @@ Use:
 getErrorMessage(error, "Fallback message")
 ```
 
-Do not parse backend payloads in components. Use `getErrorMessage(error, fallback)` and let Supabase/TanStack Query surface the underlying error.
+Do not parse backend payloads in components. Use `getErrorMessage(error, fallback)` and let the data source (Supabase / HTTP backend via ky) and TanStack Query surface the underlying error.

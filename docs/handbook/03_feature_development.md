@@ -15,7 +15,7 @@ description: Build or refactor a feature module under src/features/. Use when ad
 
 1. Create or update `src/features/[feature]/`.
 2. Define schemas and types with Zod.
-3. Put server-only API logic in `server.ts`.
+3. Put server-only API logic in `server.ts` — Supabase via `@/utils/supabase` **or** the HTTP backend via `api` from `@/lib/ky` (see `04_tanstack_start_query_router.md` → "Two Data Source Patterns").
 4. Wrap server logic with `createServerFn` in `functions.ts`.
 5. Define query keys, query options, and mutations in `queries.ts`.
 6. Build cross-page / shared / cross-cutting feature components in `components/`; page-local views live in `routes/.../-components/` (see `02_architecture.md` → Component Placement Rule).
@@ -32,6 +32,7 @@ description: Build or refactor a feature module under src/features/. Use when ad
 - `components/` should not import another feature's query or mutation hook for page composition. Move cross-feature data/actions to a route or layout container and inject props/callbacks.
 - Feature internals should use relative imports for same-feature modules instead of importing their own public barrel.
 - `components/` holds only UI that crosses page boundaries or is shared within/around the feature. A view used by exactly one route is page-local and belongs in that route's `-components/` folder; promote it into the feature when a second consumer appears (`02_architecture.md` → Component Placement Rule).
+- Data source clients are never imported outside `server.ts`: no `supabase` from `@/utils/supabase` and no `api` from `@/lib/ky` in `queries.ts`, `functions.ts`, or components.
 
 ## Mutation Side Effects
 

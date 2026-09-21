@@ -3,7 +3,8 @@ import { z } from "zod";
 /**
  * Quản lý và validate các environment variables phía Client-side.
  * - Cho phép fallback an toàn khi chưa tạo file .env để tránh crash 500 khi vừa clone repo.
- * - Cung cấp cờ `isSupabaseConfigured` để kiểm tra trạng thái kết nối Supabase ở runtime.
+ * - Cung cấp cờ `isSupabaseConfigured` / `isApiConfigured` để kiểm tra trạng thái kết nối
+ *   tới Supabase và HTTP backend (ky) ở runtime.
  */
 const clientEnvSchema = z.object({
 	VITE_SUPABASE_URL: z
@@ -11,6 +12,7 @@ const clientEnvSchema = z.object({
 		.url()
 		.default("https://placeholder.supabase.co"),
 	VITE_SUPABASE_KEY: z.string().default("placeholder-anon-key"),
+	VITE_API_URL: z.string().url().default("http://localhost:40723/api/v1"),
 });
 
 const parsed = clientEnvSchema.safeParse(import.meta.env);
@@ -26,12 +28,10 @@ export const isSupabaseConfigured = Boolean(
 	!import.meta.env.VITE_SUPABASE_URL.includes("<your-project>"),
 );
 
-if (
-	!isSupabaseConfigured &&
-	import.meta.env.DEV &&
-	typeof window !== "undefined"
-) {
+export const isApiConfigured = Boolean(clientEnv.VITE_API_URL);
+
+if (!isApiConfigured && import.meta.env.DEV && typeof window !== "undefined") {
 	console.info(
-		"[env] Supabase credentials not found in .env. Running with auth disabled.",
+		"[env] Backend API URL not found in .env. Using default http://localhost:40723/api/v1.",
 	);
 }

@@ -17,7 +17,7 @@ export interface AuthDialogProps {
 	children?: React.ReactNode;
 }
 
-/* Chỉ Sign In — tài khoản admin được tạo trực tiếp trên Supabase. */
+/* Chỉ Sign In — tài khoản được tạo qua HTTP backend. */
 export const AuthDialog = ({
 	open,
 	onOpenChange,

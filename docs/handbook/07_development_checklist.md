@@ -1,6 +1,6 @@
 ---
 name: development-checklist
-description: Review implementation against the project's architecture, data, and UI rules. Use before, during, and after coding a feature to verify feature boundaries, data fetching, UI states, mutations, and Supabase usage.
+description: Review implementation against the project's architecture, data, and UI rules. Use before, during, and after coding a feature to verify feature boundaries, data fetching (Supabase & HTTP backend via ky), UI states, mutations, and error handling.
 ---
 
 # Development Checklist
@@ -66,13 +66,28 @@ Submit-critical examples:
 - Await invalidation when pending state should include cache refresh.
 - Use query key factories for invalidation.
 
-## Supabase and Error Messages
+## Data Source and Error Messages
+
+Both data sources (Supabase and the HTTP backend via ky) follow the same feature shape: IO in `server.ts`, wrapped by `createServerFn` in `functions.ts`, consumed by `queries.ts`. See `04_tanstack_start_query_router.md` → "Two Data Source Patterns".
+
+Supabase:
 
 - Use the shared client from `src/utils/supabase.ts`.
 - Check `error` on every Supabase response; never assume `data` is present on failure.
 - Translate known no-row errors (e.g. `PGRST116`) into `notFound()` for detail resources.
 - Do not swallow Supabase errors into empty arrays or fallback values.
+- Auth/session-aware Supabase code lives in feature `server.ts`; never call `supabase.auth` from component queries.
+
+HTTP backend (ky):
+
+- Use the shared `api` instance from `src/lib/ky.ts`; no hand-rolled `fetch`.
+- `server.ts` unwraps `ResponseSchema<T>` → `response.data`.
+- Do not reimplement Bearer/refresh auth — ky handles it via the session cookie.
+
+Both:
+
 - UI and mutation catch blocks use `getErrorMessage(error, fallback)`.
+- `server.ts` imports `"@tanstack/react-start/server-only"`.
 
 ## Review Checklist
 

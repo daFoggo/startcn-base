@@ -7,7 +7,7 @@
 | Server state | TanStack Query |
 | Forms | TanStack Form |
 | Tables | TanStack Table (v9) |
-| Data platform | Supabase (JS client) |
+| Data sources | HTTP backend (ky) + Supabase (JS client) |
 | Validation | Zod |
 | Language | TypeScript 7 (native `tsc`) |
 | UI | React 19, shadcn/ui, Base UI |
@@ -17,16 +17,27 @@
 | Formatting/linting | Biome |
 | Build tooling | Vite |
 
+## Data Sources
+
+The app talks to two backends, both through feature `server.ts` + `functions.ts` (see `04_tanstack_start_query_router.md` → "Two Data Source Patterns"):
+
+- **HTTP backend** (FastAPI at `http://localhost:40723/api/v1`) — accessed with the shared `ky` instance from `src/lib/ky.ts`.
+- **Supabase** — database/auth/realtime, accessed with the shared client from `src/utils/supabase.ts`.
+
+Never call either client directly from `queries.ts` or components.
+
 ## Environment
 
-Client environment variables are validated in `src/configs/env.ts`.
+Client environment variables are validated in `src/configs/env.ts`; server-only secrets are read via `process.env`.
 
 ```env
 VITE_SUPABASE_URL=https://<your-project>.supabase.co
 VITE_SUPABASE_KEY=sb_publishable_...
+VITE_API_URL=http://localhost:40723/api/v1
+SESSION_SECRET=a-long-random-secret-at-least-32-chars
 ```
 
-The Supabase client is created once in `src/utils/supabase.ts`.
+The Supabase client is created once in `src/utils/supabase.ts`. The `ky` client is created once in `src/lib/ky.ts` and reads the auth session cookie (see `src/lib/session.server.ts`).
 
 ## TypeScript 7 (Native) Setup
 
