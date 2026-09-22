@@ -94,17 +94,17 @@ The home route (`src/routes/index.tsx`) demonstrates reading rows from the `todo
 | `pnpm preview` | Preview production build |
 | `pnpm typecheck` | Run TypeScript checks |
 | `pnpm test` | Run tests (Vitest) |
-| `pnpm format` | Format code (Prettier) |
-| `pnpm check` | Check formatting (Prettier) |
-| `pnpm lint` | Lint code (ESLint) |
-| `pnpm exec biome check --write` | Lint + format (Biome, canonical) |
+| `pnpm format` | Format code (Biome) |
+| `pnpm check` | Check lint + format + imports (Biome) |
+| `pnpm lint` | Lint code (Biome) |
+| `pnpm check:fix` | Auto-fix lint + format + imports (Biome) |
 
 ## Quality Gate
 
 Run these after larger changes or before merging (see `docs/handbook/06_quality_rules.md`):
 
 ```bash
-pnpm exec biome check --write
+pnpm check:fix
 pnpm typecheck
 pnpm build
 ```

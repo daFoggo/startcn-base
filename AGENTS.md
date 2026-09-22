@@ -105,8 +105,8 @@ Every async UI must distinguish loading, error, and valid empty data.
 
 - Prefer small, scoped changes that match existing code patterns.
 - Run checks after major multi-file work:
-  - `pnpm lint`
-  - `pnpm check`
+  - `pnpm lint` (Biome)
+  - `pnpm check` (Biome)
   - `pnpm test`
   - `pnpm typecheck`
   - `pnpm build`

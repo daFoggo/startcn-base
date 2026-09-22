@@ -16,7 +16,7 @@ description: Enforce UI consistency and safety rules. Use when writing or review
 Run these after larger changes or before merging:
 
 ```bash
-pnpm exec biome check --write
+pnpm check:fix
 pnpm typecheck
 pnpm build
 ```
