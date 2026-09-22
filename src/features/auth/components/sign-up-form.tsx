@@ -13,10 +13,10 @@ import {
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { getErrorMessage } from "@/lib/error";
-import { useLoginMutation } from "../queries";
-import { LoginInputSchema } from "../schemas";
+import { useSignUpMutation } from "../queries";
+import { SignUpInputSchema } from "../schemas";
 
-export interface SignInFormProps {
+export interface SignUpFormProps {
 	onSuccess?: () => void;
 }
 
@@ -29,29 +29,30 @@ const getFieldError = (err: unknown): string => {
 	return String(err);
 };
 
-export const SignInForm = ({ onSuccess }: SignInFormProps) => {
-	const loginMutation = useLoginMutation();
+export const SignUpForm = ({ onSuccess }: SignUpFormProps) => {
+	const signUpMutation = useSignUpMutation();
 	const [serverError, setServerError] = React.useState<string | null>(null);
 	const [showPassword, setShowPassword] = React.useState(false);
 
 	const form = useForm({
 		defaultValues: {
+			name: "",
 			email: "",
 			password: "",
 		},
 		validators: {
-			onSubmit: LoginInputSchema,
+			onSubmit: SignUpInputSchema,
 		},
 		onSubmit: async ({ value }) => {
 			setServerError(null);
 			try {
-				await loginMutation.mutateAsync(value);
+				await signUpMutation.mutateAsync(value);
 				onSuccess?.();
 			} catch (err) {
 				setServerError(
 					getErrorMessage(
 						err,
-						"Sign in failed. Please verify your email and password.",
+						"Sign up failed. Please check your details and try again.",
 					),
 				);
 			}
@@ -75,10 +76,46 @@ export const SignInForm = ({ onSuccess }: SignInFormProps) => {
 			)}
 
 			<form.Field
+				name="name"
+				validators={{
+					onBlur: ({ value }) => {
+						const result = SignUpInputSchema.shape.name.safeParse(value);
+						return result.success ? undefined : result.error.issues[0]?.message;
+					},
+				}}
+			>
+				{(field) => {
+					const errorMsg = getFieldError(field.state.meta.errors[0]);
+					return (
+						<div className="flex flex-col gap-1.5">
+							<Label htmlFor={field.name}>Name</Label>
+							<Input
+								id={field.name}
+								name={field.name}
+								type="text"
+								autoComplete="name"
+								placeholder="Your name"
+								value={field.state.value}
+								onBlur={field.handleBlur}
+								onChange={(e) => field.handleChange(e.target.value)}
+								disabled={signUpMutation.isPending}
+								aria-invalid={field.state.meta.errors.length > 0}
+							/>
+							{errorMsg && (
+								<p className="text-xs font-medium text-destructive">
+									{errorMsg}
+								</p>
+							)}
+						</div>
+					);
+				}}
+			</form.Field>
+
+			<form.Field
 				name="email"
 				validators={{
 					onBlur: ({ value }) => {
-						const result = LoginInputSchema.shape.email.safeParse(value);
+						const result = SignUpInputSchema.shape.email.safeParse(value);
 						return result.success ? undefined : result.error.issues[0]?.message;
 					},
 				}}
@@ -97,7 +134,7 @@ export const SignInForm = ({ onSuccess }: SignInFormProps) => {
 								value={field.state.value}
 								onBlur={field.handleBlur}
 								onChange={(e) => field.handleChange(e.target.value)}
-								disabled={loginMutation.isPending}
+								disabled={signUpMutation.isPending}
 								aria-invalid={field.state.meta.errors.length > 0}
 							/>
 							{errorMsg && (
@@ -114,7 +151,7 @@ export const SignInForm = ({ onSuccess }: SignInFormProps) => {
 				name="password"
 				validators={{
 					onBlur: ({ value }) => {
-						const result = LoginInputSchema.shape.password.safeParse(value);
+						const result = SignUpInputSchema.shape.password.safeParse(value);
 						return result.success ? undefined : result.error.issues[0]?.message;
 					},
 				}}
@@ -129,12 +166,12 @@ export const SignInForm = ({ onSuccess }: SignInFormProps) => {
 									id={field.name}
 									name={field.name}
 									type={showPassword ? "text" : "password"}
-									autoComplete="current-password"
-									placeholder="Enter your password"
+									autoComplete="new-password"
+									placeholder="••••••••"
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
-									disabled={loginMutation.isPending}
+									disabled={signUpMutation.isPending}
 									aria-invalid={field.state.meta.errors.length > 0}
 								/>
 								<InputGroupAddon align="inline-end">
@@ -149,9 +186,13 @@ export const SignInForm = ({ onSuccess }: SignInFormProps) => {
 									</InputGroupButton>
 								</InputGroupAddon>
 							</InputGroup>
-							{errorMsg && (
+							{errorMsg ? (
 								<p className="text-xs font-medium text-destructive">
 									{errorMsg}
+								</p>
+							) : (
+								<p className="text-xs text-muted-foreground">
+									At least 6 characters
 								</p>
 							)}
 						</div>
@@ -167,15 +208,15 @@ export const SignInForm = ({ onSuccess }: SignInFormProps) => {
 						type="submit"
 						size="lg"
 						className="mt-2 w-full"
-						disabled={!canSubmit || loginMutation.isPending || isSubmitting}
+						disabled={!canSubmit || signUpMutation.isPending || isSubmitting}
 					>
-						{loginMutation.isPending || isSubmitting ? (
+						{signUpMutation.isPending || isSubmitting ? (
 							<>
 								<Spinner className="mr-2" />
-								Signing in...
+								Creating account...
 							</>
 						) : (
-							"Sign in"
+							"Create account"
 						)}
 					</Button>
 				)}

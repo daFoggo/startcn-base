@@ -54,8 +54,8 @@ src/features/[feature]/
 - TanStack Query, Router, and Start are the approved stack for server state, routing, and server functions.
 - Query functions must resolve valid data or throw. Do not return `null`, `[]`, or fallback objects for failures.
 - Use `queryOptions` factories and feature query key factories.
-- Critical route data: `loader` + `context.queryClient.ensureQueryData(...)` + `useSuspenseQuery`.
-- Secondary/optional widgets: `prefetchQuery` or local `useQuery`, with local loading/error/empty states.
+- Critical route data: `loader` + awaited `context.queryClient.query(...)` + `useSuspenseQuery`. Do not use deprecated `ensureQueryData`/`prefetchQuery`.
+- Secondary/optional widgets: fire-and-forget `void context.queryClient.query(...).catch(noop)` or local `useQuery`, with local loading/error/empty states.
 - Required Suspense query options should not use `enabled`; optional/inline component queries may use `enabled`.
 - Shared mutation hooks own cache invalidation, optimistic updates, and cache writes.
 - Components own toast, dialog state, navigation, and local UI side effects.
@@ -63,7 +63,7 @@ src/features/[feature]/
 
 ## Supabase Rules
 
-Supabase is one of two supported data sources (the other is the HTTP backend accessed via `ky`, see below). It follows the same feature shape: Supabase IO lives in the feature's `server.ts`, wrapped by `createServerFn` in `functions.ts`, and consumed through `queries.ts`. Do not call the Supabase client directly from `queries.ts` or components.
+Supabase is one of two supported data sources (the other is the HTTP backend accessed via `ky`, see below). It follows the same feature shape: Supabase IO lives in the feature's `server.ts`, wrapped by `createServerFn` in `functions.ts`, and consumed through `queries.ts`. Do not call the Supabase client directly from `queries.ts` or components — the base previously wired it inline and that is the pattern to fix.
 
 - Use the shared client from `src/utils/supabase.ts`. Do not create ad-hoc clients.
 - Check `error` on every Supabase response; `data` can be `null` on failures.
@@ -78,10 +78,9 @@ The HTTP backend (FastAPI) is the other supported data source. It is accessed wi
 
 - All HTTP IO lives in the feature's `server.ts` (server-only, imports `@tanstack/react-start/server-only`) and uses the `api` instance from `@/lib/ky`.
 - `functions.ts` wraps each `server.ts` call in a `createServerFn` with `.validator(...)`; `queries.ts` consumes those server functions.
-- The backend wraps every response in `ResponseSchema<T>` (`{ success, message, data }`); `server.ts` must unwrap `response.data`.
-- `ky` automatically attaches the Bearer token (from the server session cookie via `src/lib/auth-token.ts`), retries once on 401, and redirects to `SIGN_IN_PATH` when refresh fails — do not reimplement auth on each call.
+- The backend returns resource representations directly (no `{ success, message, data }` envelope); `server.ts` types the response as the resource itself. Errors are RFC 7807 problem details (`{ type, title, status, detail }`).
+- `ky` automatically attaches the Bearer token (from the server session cookie), retries once on 401, and redirects to sign-in when refresh fails — do not reimplement auth on each call.
 - Check the exact endpoint contract in the backend OpenAPI (`http://localhost:40723/openapi.json`) before writing a `server.ts` call.
-- Feature auth is session-cookie based (`src/lib/session.server.ts`); `sign-in`/`sign-up`/`refresh` server functions update or clear that session.
 
 ## UI State Rules
 
@@ -92,6 +91,15 @@ Every async UI must distinguish loading, error, and valid empty data.
 - Empty: use a full empty state composition when data is valid but empty.
 - Do not silently hide failed queries by defaulting to `[]` or `null`.
 - If a query feeds submit-critical data, disable the action while loading or errored.
+
+## Component Rules (Use Existing, Don't Reinvent)
+
+- **Every UI element comes from an existing primitive in `src/components/ui/`.** Check that folder before writing custom markup.
+- Never hand-roll a styled `<button>`, `<a>`-as-button, badge/pill `<span>`, `<div>` card/alert/empty, or `<hr>` when the primitive exists.
+- Always use `<Badge>` for pills/tags, `<Skeleton>` for loading, `<Separator>` for dividers, `<Empty>` for empty states, `<Avatar>` (+ `AvatarFallback`), `<InputGroup>` for input+button, `FieldGroup`/`Field` for forms, `ToggleGroup` for 2–7 option sets.
+- Primitives' default shape is the design system: choose `variant`/`size` props, do not override `rounded-*`, `text-*`, or `px-*` on them.
+- If a primitive is missing, add it with the shadcn CLI (`npx shadcn@latest add <component>`), never hand-write a new UI primitive.
+- Use semantic theme tokens and Tailwind default scale only (see `10_design_tokens.md`). No arbitrary values, no raw palette colors, no manual `dark:` overrides.
 
 ## Quality Rules
 

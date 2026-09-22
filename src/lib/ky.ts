@@ -6,7 +6,7 @@ import { clientEnv } from "@/configs/env";
  * Tự động xử lý:
  * - Gắn Bearer Token vào header mỗi khi gửi request.
  * - Tự động thử lại (retry) một lần khi gặp lỗi 401 bằng cách gọi API refresh token.
- * - Xóa session và điều hướng về `SIGN_IN_PATH` nếu xác thực thất bại hoàn toàn.
+ * - Xóa session và điều hướng về trang sign-in nếu xác thực thất bại hoàn toàn.
  */
 export const api = ky.create({
 	timeout: 30000,
@@ -28,8 +28,11 @@ export const api = ky.create({
 				}
 
 				const alreadyRetried = request.headers.get(AUTH_RETRY_HEADER) === "1";
+				const isOnAuthPage =
+					typeof window !== "undefined" &&
+					window.location.pathname.startsWith("/auth/");
 
-				if (!alreadyRetried) {
+				if (!alreadyRetried && !isOnAuthPage) {
 					const { refreshAuthToken } = await import("./auth-token");
 					const nextToken = await refreshAuthToken();
 
@@ -51,7 +54,7 @@ export const api = ky.create({
 				if (typeof window !== "undefined") {
 					const { redirect } = await import("@tanstack/react-router");
 					throw redirect({
-						href: SIGN_IN_PATH,
+						href: "/auth/sign-in",
 						search: {
 							redirect: window.location.href,
 						},
@@ -77,13 +80,6 @@ export const api = ky.create({
 // --- Internal Constants & Configuration ---
 
 const AUTH_RETRY_HEADER = "x-auth-retry";
-
-/**
- * Đường dẫn điều hướng khi xác thực thất bại.
- * Base dùng auth dialog nên mặc định quay về trang chủ; project có route sign-in riêng
- * (ví dụ `/auth/sign-in`) thì đổi hằng số này.
- */
-const SIGN_IN_PATH = "/";
 
 const BACKEND_ERROR_MESSAGE_KEYS = ["message", "detail", "error"] as const;
 
